@@ -28,9 +28,20 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(x =>
-                        {
-                            x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
-                        });
+            {
+                x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            // Configure and use cors
+            // Any request from client application will now be able to make calls to API
+            services.AddCors(options => 
+            {
+                options.AddPolicy("CorsPolicy", policy => 
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                });
+            });
+
             services.AddControllers();
         }
 
@@ -48,6 +59,9 @@ namespace API
 
             app.UseAuthorization();
 
+            // make app use cors. Enable cors
+            app.UseCors("CorsPolicy");
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
