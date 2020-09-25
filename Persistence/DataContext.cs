@@ -15,6 +15,7 @@ namespace Persistence
 
         public DbSet<Operation> Operations {get; set; }
 
+        
         // Configure entities while migration is being created
         protected override void OnModelCreating(ModelBuilder builder)
         {
