@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Operations;
@@ -23,6 +24,13 @@ namespace API.Controllers
         {
             // call Application layer to query data
             return await _mediator.Send(new OperationList.Query());
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Operation>> OperationDetails(Guid id)
+        {
+            return await _mediator.Send(new OperationDetails.Query{Id = id});
         }
     }
 }
