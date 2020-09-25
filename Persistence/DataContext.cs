@@ -1,5 +1,4 @@
-﻿using System;
-using Domain;
+﻿using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
@@ -13,6 +12,9 @@ namespace Persistence
 
         public DbSet<Value> Values {get; set; }
 
+        public DbSet<Operation> Operations {get; set; }
+
+        
         // Configure entities while migration is being created
         protected override void OnModelCreating(ModelBuilder builder)
         {
