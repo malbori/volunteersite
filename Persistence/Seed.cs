@@ -9,11 +9,11 @@ namespace Persistence
     {
         public static void SeedData(DataContext context) 
         {
-            if(!context.Events.Any())
+            if(!context.Operations.Any())
             {
-                var events = new List<Event>
+                var events = new List<Operation>
                 {
-                    new Event
+                    new Operation
                     {
                         Title = "Past Event 1",
                         Date = DateTime.Now.AddMonths(-2),
@@ -22,7 +22,7 @@ namespace Persistence
                         City = "London",
                         Venue = "Pub",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Past Event 2",
                         Date = DateTime.Now.AddMonths(-1),
@@ -31,7 +31,7 @@ namespace Persistence
                         City = "Paris",
                         Venue = "Louvre",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 1",
                         Date = DateTime.Now.AddMonths(1),
@@ -40,7 +40,7 @@ namespace Persistence
                         City = "London",
                         Venue = "Natural History Museum",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 2",
                         Date = DateTime.Now.AddMonths(2),
@@ -49,7 +49,7 @@ namespace Persistence
                         City = "London",
                         Venue = "O2 Arena",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 3",
                         Date = DateTime.Now.AddMonths(3),
@@ -58,7 +58,7 @@ namespace Persistence
                         City = "London",
                         Venue = "Another pub",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 4",
                         Date = DateTime.Now.AddMonths(4),
@@ -67,7 +67,7 @@ namespace Persistence
                         City = "London",
                         Venue = "Yet another pub",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 5",
                         Date = DateTime.Now.AddMonths(5),
@@ -76,7 +76,7 @@ namespace Persistence
                         City = "London",
                         Venue = "Just another pub",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 6",
                         Date = DateTime.Now.AddMonths(6),
@@ -85,7 +85,7 @@ namespace Persistence
                         City = "London",
                         Venue = "Roundhouse Camden",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 7",
                         Date = DateTime.Now.AddMonths(7),
@@ -94,7 +94,7 @@ namespace Persistence
                         City = "London",
                         Venue = "Somewhere on the Thames",
                     },
-                    new Event
+                    new Operation
                     {
                         Title = "Future Event 8",
                         Date = DateTime.Now.AddMonths(8),
@@ -106,7 +106,7 @@ namespace Persistence
                 };
 
                 // only running once so no need for this to be async
-                context.Events.AddRange(events);
+                context.Operations.AddRange(events);
                 context.SaveChanges();
             }
         }

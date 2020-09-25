@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Events;
+using Application.Operations;
 using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,20 +9,20 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventsController : ControllerBase
+    public class OperationController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public EventsController(IMediator mediator)
+        public OperationController(IMediator mediator)
         {
             _mediator = mediator;
 
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Event>>> List()
+        public async Task<ActionResult<List<Operation>>> List()
         {
             // call Application layer to query data
-            return await _mediator.Send(new EventList.Query());
+            return await _mediator.Send(new OperationList.Query());
         }
     }
 }

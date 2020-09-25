@@ -7,13 +7,13 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-namespace Application.Events
+namespace Application.Operations
 {
-    public class EventList
+    public class OperationList
     {
-        public class Query : IRequest<List<Event>> { }
+        public class Query : IRequest<List<Operation>> { }
 
-        public class Handler : IRequestHandler<Query, List<Event>>
+        public class Handler : IRequestHandler<Query, List<Operation>>
         {
             //constructer
             private readonly DataContext _context;
@@ -23,9 +23,9 @@ namespace Application.Events
 
             }
 
-            public async Task<List<Event>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<Operation>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var events = await _context.Events.ToListAsync();
+                var events = await _context.Operations.ToListAsync();
 
                 return events;
 

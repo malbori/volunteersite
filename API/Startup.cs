@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Persistence;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
-using Application.Events;
+using Application.Operations;
 
 namespace API
 {
@@ -46,7 +46,7 @@ namespace API
 
             // Only need to tell it about one handler and the Assembly
             // This will make the MediatR service aware of all the handlers made
-            services.AddMediatR(typeof(EventList.Handler).Assembly);
+            services.AddMediatR(typeof(OperationList.Handler).Assembly);
             
             services.AddControllers();
         }
