@@ -1,5 +1,10 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Domain;
 using MediatR;
+using Persistence;
+using SQLitePCL;
 
 namespace Application.Operations
 {
@@ -14,6 +19,39 @@ namespace Application.Operations
             public DateTime Date { get; set; }
             public string City { get; set; }
             public string Venue { get; set; }
+        }
+
+        public class Handler : IRequestHandler<Command>
+        {
+            private readonly DataContext _context;
+            public Handler(DataContext context)
+            {
+                _context = context;
+
+            }
+
+            public async Task<Unit> Handle(Command req, CancellationToken cancellationToken)
+            {
+                var operation = new Operation
+                {
+                    Id = req.Id,
+                    Title = req.Title,
+                    Description = req.Description,
+                    Category = req.Category,
+                    Date = req.Date,
+                    City = req.City,
+                    Venue = req.Venue
+
+                };
+
+                // not using special method generator so do not use asyncadd
+                _context.Operations.Add(operation);
+                var success = await _context.SaveChangesAsync() > 0;
+
+                if (success) return Unit.Value;
+
+                throw new Exception("Problem saving changes.");
+            }
         }
     }
 }

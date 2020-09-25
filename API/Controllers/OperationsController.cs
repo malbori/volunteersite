@@ -32,5 +32,11 @@ namespace API.Controllers
         {
             return await _mediator.Send(new OperationDetails.Query{Id = id});
         }
+
+        [HttpPost]
+        public async Task<ActionResult<Unit>> Create(OperationCreate.Command command)
+        {
+            return await _mediator.Send(command);
+        }
     }
 }
