@@ -2,7 +2,8 @@ export interface IOperation {
     id: string;
     title: string;
     category: string;
-    date: Date;
+    date: string;
     city: string;
     venue: string;
+    description: string;
 }

@@ -1,34 +1,28 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import { Header, Icon, List } from 'semantic-ui-react';
-import axios from 'axios';
-import { IOperation } from '../models/operation'
-import { IndexedAccessType } from 'typescript';
+import React, { useEffect, Fragment, useContext } from 'react';
+import { Container } from 'semantic-ui-react';
 import NavBar from '../../features/nav/NavBar';
+import OperationDashboard from '../../features/operations/dashboard/OperationDashboard';
+import { LoadingComponent } from './LoadingComponent';
+import { observer } from 'mobx-react-lite';
+import OperationStore from '../stores/operationStore';
 
 const App = () => {
-
-  const [operations, setOperations] = useState<IOperation[]>([]);
+  const operationStore = useContext(OperationStore)
 
   useEffect(() => {
-    axios
-      .get<IOperation[]>('http://localhost:5000/api/operations')
-      .then(res => {
-        setOperations(res.data);
-      });
-  }, []);
+    operationStore.loadOperations();
+  }, [operationStore]);
+
+  if (operationStore.loadingInitial) return <LoadingComponent content='Loading operations' />
 
   return (
     <Fragment>
       <NavBar />
-
-      <List>
-        {operations.map(operation => (
-          <List.Item key={operation.id}>{operation.title}</List.Item>
-        ))}
-      </List>
-
+      <Container style={{ marginTop: '7em' }}>
+        <OperationDashboard />
+      </Container>
     </Fragment>
   );
 };
 
-export default App;
+export default observer(App);
