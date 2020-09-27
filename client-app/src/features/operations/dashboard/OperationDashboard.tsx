@@ -3,7 +3,7 @@ import { Grid } from 'semantic-ui-react';
 import OperationList from './OperationList';
 import { observer } from 'mobx-react-lite';
 import OperationStore from '../../../app/stores/operationStore';
-import {LoadingComponent} from '../../../app/layout/LoadingComponent';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 
 const OperationDashboard: React.FC = () => {
 

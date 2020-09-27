@@ -1,54 +1,27 @@
-import React, { useContext } from 'react';
-import { Item, Button, Label, Segment } from 'semantic-ui-react';
+import React, { useContext, Fragment } from 'react';
+import { Item, Label } from 'semantic-ui-react';
 import { observer } from 'mobx-react-lite';
 import OperationStore from '../../../app/stores/operationStore';
-import { Link } from 'react-router-dom';
+import OperationListItem from './OperationListItem';
 
 const OperationList: React.FC = () => {
   const operationStore = useContext(OperationStore);
-  const {
-    operationsByDate,
-    deleteOperation,
-    submitting,
-    target
-  } = operationStore;
+  const { operationsByDate } = operationStore;
   return (
-    <Segment clearing>
-      <Item.Group divided>
-        {operationsByDate.map(operation => (
-          <Item key={operation.id}>
-            <Item.Content>
-              <Item.Header as='a'>{operation.title}</Item.Header>
-              <Item.Meta>{operation.date}</Item.Meta>
-              <Item.Description>
-                <div>{operation.description}</div>
-                <div>
-                  {operation.city}, {operation.venue}
-                </div>
-              </Item.Description>
-              <Item.Extra>
-                <Button
-                  as={Link}
-                  to={`/operations/${operation.id}`}
-                  floated='right'
-                  content='View'
-                  color='blue'
-                />
-                <Button
-                  name={operation.id}
-                  loading={target === operation.id && submitting}
-                  onClick={e => deleteOperation(e, operation.id)}
-                  floated='right'
-                  content='Delete'
-                  color='red'
-                />
-                <Label basic content={operation.category} />
-              </Item.Extra>
-            </Item.Content>
-          </Item>
-        ))}
-      </Item.Group>
-    </Segment>
+    <Fragment>
+      {operationsByDate.map(([group, operations]) => (
+        <Fragment key={group}>
+          <Label size='large' color='blue'>
+            {group}
+          </Label>
+          <Item.Group divided>
+            {operations.map(operation => (
+              <OperationListItem key={operation.id} operation={operation} />
+            ))}
+          </Item.Group>
+        </Fragment>
+      ))}
+    </Fragment>
   );
 };
 

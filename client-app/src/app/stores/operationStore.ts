@@ -13,9 +13,18 @@ class OperationStore {
   @observable target = '';
 
   @computed get operationsByDate() {
-    return Array.from(this.operationRegistry.values()).sort(
+    return this.groupOperationsByDate(Array.from(this.operationRegistry.values()))
+  }
+
+  groupOperationsByDate(operations: IOperation[]) {
+    const sortedOperations = operations.sort(
       (a, b) => Date.parse(a.date) - Date.parse(b.date)
-    );
+    )
+    return Object.entries(sortedOperations.reduce((operations, operation) => {
+      const date = operation.date.split('T')[0];
+      operations[date] = operations[date] ? [...operations[date], operation] : [operation];
+      return operations;
+    }, {} as {[key: string]: IOperation[]}));
   }
 
   @action loadOperations = async () => {
@@ -29,7 +38,7 @@ class OperationStore {
         });
         this.loadingInitial = false;
       })
-
+      console.log(this.groupOperationsByDate(operations));
     } catch (error) {
       runInAction('load operations error', () => {
         this.loadingInitial = false;
