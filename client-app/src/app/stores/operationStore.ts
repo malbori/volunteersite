@@ -3,124 +3,120 @@ import { createContext, SyntheticEvent } from 'react';
 import { IOperation } from '../models/operation';
 import agent from '../api/agent';
 
-// enabling strict mobx
-// make sure observable values are changed only within actions
-configure({ enforceActions: 'always' });
+configure({enforceActions: 'always'});
 
 class OperationStore {
-    @observable operationRegistry = new Map();
-    @observable operations: IOperation[] = [];
-    @observable selectedOperation: IOperation | undefined;
-    @observable loadingInitial = false;
-    @observable editMode = false;
-    @observable submitting = false;
-    @observable target = '';
+  @observable operationRegistry = new Map();
+  @observable operation: IOperation | null = null;
+  @observable loadingInitial = false;
+  @observable submitting = false;
+  @observable target = '';
 
+  @computed get operationsByDate() {
+    return Array.from(this.operationRegistry.values()).sort(
+      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+    );
+  }
 
-    //return events by ordered date
-    @computed get operationsByDate() {
-        return Array.from(this.operationRegistry.values()).sort(
-            (a, b) => Date.parse(a.date) - Date.parse(b.date)
-        );
+  @action loadOperations = async () => {
+    this.loadingInitial = true;
+    try {
+      const operations = await agent.Operations.list();
+      runInAction('loading operations', () => {
+        operations.forEach(operation => {
+          operation.date = operation.date.split('.')[0];
+          this.operationRegistry.set(operation.id, operation);
+        });
+        this.loadingInitial = false;
+      })
+
+    } catch (error) {
+      runInAction('load operations error', () => {
+        this.loadingInitial = false;
+      })
     }
+  };
 
-    // load the events
-    @action loadOperations = async () => {
-        this.loadingInitial = true;
-        try {
-            const operations = await agent.Operations.list();
-            runInAction('loading events', () => {
-                operations.forEach(operation => {
-                    operation.date = operation.date.split('.')[0];
-                    this.operationRegistry.set(operation.id, operation);
-                });
-                this.loadingInitial = false;
-            })
-
-        } catch (error) {
-            runInAction('load events error', () => {
-                this.loadingInitial = false;
-            })
-        }
-    };
-
-    @action createOperation = async (operation: IOperation) => {
-        this.submitting = true;
-        try {
-            await agent.Operations.create(operation);
-            runInAction('create event', () => {
-                this.operationRegistry.set(operation.id, operation);
-                this.editMode = false;
-                this.submitting = false;
-            })
-        } catch (error) {
-            runInAction('create event error', () => {
-                this.submitting = false;
-            })
-            console.log(error);
-        }
-    };
-
-    @action editOperation = async (operation: IOperation) => {
-        this.submitting = true;
-        try {
-            await agent.Operations.update(operation);
-            runInAction('editing event', () => {
-                this.operationRegistry.set(operation.id, operation);
-                this.selectedOperation = operation;
-                this.editMode = false;
-                this.submitting = false;
-            })
-
-        } catch (error) {
-            runInAction('edit event error', () => {
-                this.submitting = false;
-            })
-            console.log(error);
-        }
-    };
-
-    @action deleteOperation = async (event: SyntheticEvent<HTMLButtonElement>, id: string) => {
-        this.submitting = true;
-        this.target = event.currentTarget.name;
-        try {
-            await agent.Operations.delete(id);
-            runInAction('deleting event', () => {
-                this.operationRegistry.delete(id);
-                this.submitting = false;
-                this.target = '';
-            })
-        } catch (error) {
-            runInAction('delete event error', () => {
-                this.submitting = false;
-                this.target = '';
-            })
-            console.log(error);
-        }
+  @action loadOperation = async (id: string) => {
+    let operation = this.getOperation(id);
+    if (operation) {
+      this.operation = operation;
+    } else {
+      this.loadingInitial = true;
+      try {
+        operation = await agent.Operations.details(id);
+        runInAction('getting operation',() => {
+          this.operation = operation;
+          this.loadingInitial = false;
+        })
+      } catch (error) {
+        runInAction('get operation error', () => {
+          this.loadingInitial = false;
+        })
+        console.log(error);
+      }
     }
+  }
 
-    @action openCreateForm = () => {
-        this.editMode = true;
-        this.selectedOperation = undefined;
-    };
+  @action clearOperation = () => {
+    this.operation = null;
+  }
 
-    @action openEditForm = (id: string) => {
-        this.selectedOperation = this.operationRegistry.get(id);
-        this.editMode = true;
+  getOperation = (id: string) => {
+    return this.operationRegistry.get(id);
+  }
+
+  @action createOperation = async (operation: IOperation) => {
+    this.submitting = true;
+    try {
+      await agent.Operations.create(operation);
+      runInAction('create operation', () => {
+        this.operationRegistry.set(operation.id, operation);
+        this.submitting = false;
+      })
+    } catch (error) {
+      runInAction('create operation error', () => {
+        this.submitting = false;
+      })
+      console.log(error);
     }
+  };
 
-    @action cancelSelectedOperation = () => {
-        this.selectedOperation = undefined;
+  @action editOperation = async (operation: IOperation) => {
+    this.submitting = true;
+    try {
+      await agent.Operations.update(operation);
+      runInAction('editing operation', () => {
+        this.operationRegistry.set(operation.id, operation);
+        this.operation = operation;
+        this.submitting = false;
+      })
+    } catch (error) {
+      runInAction('edit operation error', () => {
+        this.submitting = false;
+      })
+      console.log(error);
     }
+  };
 
-    @action cancelFormOpen = () => {
-        this.editMode = false;
+  @action deleteOperation = async (event: SyntheticEvent<HTMLButtonElement>, id: string) => {
+    this.submitting = true;
+    this.target = event.currentTarget.name;
+    try {
+      await agent.Operations.delete(id);
+      runInAction('deleting operation', () => {
+        this.operationRegistry.delete(id);
+        this.submitting = false;
+        this.target = '';
+      })
+    } catch (error) {
+      runInAction('delete operation error', () => {
+        this.submitting = false;
+        this.target = '';
+      })
+      console.log(error);
     }
-
-    @action selectOperation = (id: string) => {
-        this.selectedOperation = this.operationRegistry.get(id);
-        this.editMode = false;
-    };
+  }
 }
 
 export default createContext(new OperationStore());

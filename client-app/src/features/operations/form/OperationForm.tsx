@@ -1,36 +1,48 @@
-import React, { useState, FormEvent, useContext } from 'react';
+import React, { useState, FormEvent, useContext, useEffect } from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
 import { IOperation } from '../../../app/models/operation';
 import { v4 as uuid } from 'uuid';
 import OperationStore from '../../../app/stores/operationStore';
 import { observer } from 'mobx-react-lite';
+import { RouteComponentProps } from 'react-router';
 
-interface IProps {
-    operation: IOperation;
+interface DetailParams {
+    id: string;
 }
 
-const OperationForm: React.FC<IProps> = ({
-    operation: initialFormState,
-}) => {
-    const operationStore = useContext(OperationStore);
-    const { createOperation, editOperation, submitting, cancelFormOpen } = operationStore;
-    const initializeForm = () => {
-        if (initialFormState) {
-            return initialFormState;
-        } else {
-            return {
-                id: '',
-                title: '',
-                category: '',
-                description: '',
-                date: '',
-                city: '',
-                venue: ''
-            };
-        }
-    };
+const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({ match, history }) => {
 
-    const [operation, setOperation] = useState<IOperation>(initializeForm);
+    const operationStore = useContext(OperationStore);
+    
+    const {
+        createOperation,
+        editOperation,
+        submitting,
+        operation: initialFormState,
+        loadOperation,
+        clearOperation
+    } = operationStore;
+
+    const [operation, setOperation] = useState<IOperation>({
+        id: '',
+        title: '',
+        category: '',
+        description: '',
+        date: '',
+        city: '',
+        venue: ''
+    });
+
+    useEffect(() => {
+        if (match.params.id && operation.id.length === 0) {
+            loadOperation(match.params.id).then(
+                () => initialFormState && setOperation(initialFormState)
+            );
+        }
+        return () => {
+            clearOperation()
+        }
+    }, [loadOperation, clearOperation, match.params.id, initialFormState, operation.id.length]);
 
     const handleSubmit = () => {
         if (operation.id.length === 0) {
@@ -38,9 +50,9 @@ const OperationForm: React.FC<IProps> = ({
                 ...operation,
                 id: uuid()
             };
-            createOperation(newOperation);
+            createOperation(newOperation).then(() => history.push(`/operations/${newOperation.id}`))
         } else {
-            editOperation(operation);
+            editOperation(operation).then(() => history.push(`/operations/${operation.id}`));
         }
     };
 
@@ -92,9 +104,15 @@ const OperationForm: React.FC<IProps> = ({
                     placeholder='Venue'
                     value={operation.venue}
                 />
-                <Button loading={submitting} floated='right' positive type='submit' content='Submit' />
                 <Button
-                    onClick={cancelFormOpen}
+                    loading={submitting}
+                    floated='right'
+                    positive
+                    type='submit'
+                    content='Submit'
+                />
+                <Button
+                    onClick={() => history.push('/operations')}
                     floated='right'
                     type='button'
                     content='Cancel'

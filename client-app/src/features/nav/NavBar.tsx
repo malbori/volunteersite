@@ -1,20 +1,23 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Menu, Container, Button } from 'semantic-ui-react';
-import OperationStore from '../../app/stores/operationStore';
 import { observer } from 'mobx-react-lite';
+import { NavLink } from 'react-router-dom';
 
-const NavBar = () => {
-  const operationStore = useContext(OperationStore);
+const NavBar: React.FC = () => {
   return (
     <Menu fixed='top' inverted>
       <Container>
-        <Menu.Item header>
-          <img src="/assets/logo.png" alt="logo" style={{ marginRight: 10 }} />
-            Reoperations
+        <Menu.Item header as={NavLink} exact to='/'>
+          <img src='/assets/logo.png' alt='logo' style={{ marginRight: 10 }} />
+          Reoperations
         </Menu.Item>
-        <Menu.Item name='Operations' />
+        <Menu.Item name='Operations' as={NavLink} to='/operations' />
         <Menu.Item>
-          <Button onClick={operationStore.openCreateForm} positive content='Create Operation' />
+          <Button
+            as={NavLink} to='/createOperation'
+            positive
+            content='Create Operation'
+          />
         </Menu.Item>
       </Container>
     </Menu>

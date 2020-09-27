@@ -2,10 +2,16 @@ import React, { useContext } from 'react';
 import { Item, Button, Label, Segment } from 'semantic-ui-react';
 import { observer } from 'mobx-react-lite';
 import OperationStore from '../../../app/stores/operationStore';
+import { Link } from 'react-router-dom';
 
 const OperationList: React.FC = () => {
   const operationStore = useContext(OperationStore);
-  const { operationsByDate, selectOperation, deleteOperation, submitting, target } = operationStore;
+  const {
+    operationsByDate,
+    deleteOperation,
+    submitting,
+    target
+  } = operationStore;
   return (
     <Segment clearing>
       <Item.Group divided>
@@ -22,7 +28,8 @@ const OperationList: React.FC = () => {
               </Item.Description>
               <Item.Extra>
                 <Button
-                  onClick={() => selectOperation(operation.id)}
+                  as={Link}
+                  to={`/operations/${operation.id}`}
                   floated='right'
                   content='View'
                   color='blue'
@@ -30,7 +37,7 @@ const OperationList: React.FC = () => {
                 <Button
                   name={operation.id}
                   loading={target === operation.id && submitting}
-                  onClick={(e) => deleteOperation(e, operation.id)}
+                  onClick={e => deleteOperation(e, operation.id)}
                   floated='right'
                   content='Delete'
                   color='red'
