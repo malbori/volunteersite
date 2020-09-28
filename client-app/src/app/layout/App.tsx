@@ -7,6 +7,7 @@ import { Route, withRouter, RouteComponentProps } from 'react-router-dom';
 import HomePage from '../../features/home/HomePage';
 import OperationForm from '../../features/operations/form/OperationForm';
 import OperationDetails from '../../features/operations/details/OperationDetails';
+import NotFound from './NotFound';
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 
@@ -29,6 +30,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
           </Fragment>
         )}
       />
+      <Route component={NotFound} />
     </Fragment>
   );
 };
