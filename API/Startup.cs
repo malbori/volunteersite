@@ -7,6 +7,9 @@ using Persistence;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Application.Operations;
+using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using API.Middleware;
 
 namespace API
 {
@@ -41,18 +44,25 @@ namespace API
             // This will make the MediatR service aware of all the handlers made
             services.AddMediatR(typeof(OperationList.Handler).Assembly);
             
-            services.AddControllers();
+            // Add FluentValidation to controllers
+            services.AddControllers().AddFluentValidation(cfg => {
+                cfg.RegisterValidatorsFromAssemblyContaining<OperationCreate>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // plugging in Error handling middleware to startup config
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+
+                //app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

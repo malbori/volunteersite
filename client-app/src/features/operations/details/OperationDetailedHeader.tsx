@@ -2,6 +2,8 @@ import React from 'react';
 import { Segment, Item, Header, Button, Image } from 'semantic-ui-react';
 import { IOperation } from '../../../app/models/operation';
 import { observer } from 'mobx-react-lite';
+import { Link } from 'react-router-dom';
+import {format} from 'date-fns';
 
 const operationImageStyle = {
   filter: 'brightness(30%)'
@@ -34,7 +36,7 @@ const OperationDetailedHeader: React.FC<{operation: IOperation}> = ({operation})
                   content={operation.title}
                   style={{ color: 'white' }}
                 />
-                <p>{operation.date}</p>
+                <p>{format(operation.date, 'eeee do MMMM')}</p>
                 <p>
                   Hosted by <strong>Bob</strong>
                 </p>
@@ -46,7 +48,7 @@ const OperationDetailedHeader: React.FC<{operation: IOperation}> = ({operation})
       <Segment clearing attached='bottom'>
         <Button color='teal'>Join Operation</Button>
         <Button>Cancel attendance</Button>
-        <Button color='orange' floated='right'>
+        <Button as={Link} to={`/manage/${operation.id}`} color='orange' floated='right'>
           Manage Event
         </Button>
       </Segment>

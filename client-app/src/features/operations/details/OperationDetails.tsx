@@ -14,17 +14,19 @@ interface DetailParams {
 }
 
 const OperationDetails: React.FC<RouteComponentProps<DetailParams>> = ({
-  match
+  match,
+  history
 }) => {
   const operationStore = useContext(OperationStore);
   const { operation, loadOperation, loadingInitial } = operationStore;
 
   useEffect(() => {
     loadOperation(match.params.id);
-  }, [loadOperation, match.params.id]);
+  }, [loadOperation, match.params.id, history]);
 
-  if (loadingInitial || !operation)
-    return <LoadingComponent content='Loading operation...' />;
+  if (loadingInitial) return <LoadingComponent content='Loading operation...' />;
+
+  if (!operation) return <h2>Operation not found</h2>;
 
   return (
     <Grid>

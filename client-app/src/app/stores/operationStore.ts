@@ -2,6 +2,8 @@ import { observable, action, computed, configure, runInAction } from 'mobx';
 import { createContext, SyntheticEvent } from 'react';
 import { IOperation } from '../models/operation';
 import agent from '../api/agent';
+import { history } from '../..';
+import { toast } from 'react-toastify';
 
 configure({enforceActions: 'always'});
 
@@ -18,10 +20,10 @@ class OperationStore {
 
   groupOperationsByDate(operations: IOperation[]) {
     const sortedOperations = operations.sort(
-      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+      (a, b) => a.date.getTime() - b.date.getTime()
     )
     return Object.entries(sortedOperations.reduce((operations, operation) => {
-      const date = operation.date.split('T')[0];
+      const date = operation.date.toISOString().split('T')[0];
       operations[date] = operations[date] ? [...operations[date], operation] : [operation];
       return operations;
     }, {} as {[key: string]: IOperation[]}));
@@ -33,12 +35,11 @@ class OperationStore {
       const operations = await agent.Operations.list();
       runInAction('loading operations', () => {
         operations.forEach(operation => {
-          operation.date = operation.date.split('.')[0];
+          operation.date = new Date(operation.date);
           this.operationRegistry.set(operation.id, operation);
         });
         this.loadingInitial = false;
       })
-      console.log(this.groupOperationsByDate(operations));
     } catch (error) {
       runInAction('load operations error', () => {
         this.loadingInitial = false;
@@ -50,14 +51,18 @@ class OperationStore {
     let operation = this.getOperation(id);
     if (operation) {
       this.operation = operation;
+      return operation;
     } else {
       this.loadingInitial = true;
       try {
         operation = await agent.Operations.details(id);
         runInAction('getting operation',() => {
+          operation.date = new Date(operation.date);
           this.operation = operation;
+          this.operationRegistry.set(operation.id, operation);
           this.loadingInitial = false;
         })
+        return operation;
       } catch (error) {
         runInAction('get operation error', () => {
           this.loadingInitial = false;
@@ -83,11 +88,13 @@ class OperationStore {
         this.operationRegistry.set(operation.id, operation);
         this.submitting = false;
       })
+      history.push(`/operations/${operation.id}`)
     } catch (error) {
       runInAction('create operation error', () => {
         this.submitting = false;
       })
-      console.log(error);
+      toast.error('Problem submitting data');
+      console.log(error.response);
     }
   };
 
@@ -100,10 +107,12 @@ class OperationStore {
         this.operation = operation;
         this.submitting = false;
       })
+      history.push(`/operations/${operation.id}`)
     } catch (error) {
       runInAction('edit operation error', () => {
         this.submitting = false;
       })
+      toast.error('Problem submitting data');
       console.log(error);
     }
   };
