@@ -16,6 +16,8 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace API
 {
@@ -50,8 +52,12 @@ namespace API
             // This will make the MediatR service aware of all the handlers made
             services.AddMediatR(typeof(OperationList.Handler).Assembly);
 
+            // Add authorization to controllers
             // Add FluentValidation to controllers
-            services.AddControllers().AddFluentValidation(cfg =>
+            services.AddControllers(opt => {
+                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                opt.Filters.Add(new AuthorizeFilter(policy));
+            }).AddFluentValidation(cfg =>
             {
                 cfg.RegisterValidatorsFromAssemblyContaining<OperationCreate>();
             });
