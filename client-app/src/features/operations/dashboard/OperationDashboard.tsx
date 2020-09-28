@@ -2,18 +2,19 @@ import React, { useContext, useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
 import OperationList from './OperationList';
 import { observer } from 'mobx-react-lite';
-import OperationStore from '../../../app/stores/operationStore';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { RootStoreContext } from '../../../app/stores/rootStore';
 
 const OperationDashboard: React.FC = () => {
 
-  const operationStore = useContext(OperationStore);
+  const rootStore = useContext(RootStoreContext);
+  const {loadOperations, loadingInitial} = rootStore.operationStore;
 
   useEffect(() => {
-    operationStore.loadOperations();
-  }, [operationStore]);
+    loadOperations();
+  }, [loadOperations]);
 
-  if (operationStore.loadingInitial)
+  if (loadingInitial)
     return <LoadingComponent content='Loading operations' />;
 
   return (
