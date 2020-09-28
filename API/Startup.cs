@@ -8,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Application.Operations;
 using FluentValidation.AspNetCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using API.Middleware;
+using Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace API
 {
@@ -32,9 +33,9 @@ namespace API
 
             // Configure and use cors
             // Any request from client application will now be able to make calls to API
-            services.AddCors(options => 
+            services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy", policy => 
+                options.AddPolicy("CorsPolicy", policy =>
                 {
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
                 });
@@ -43,11 +44,23 @@ namespace API
             // Only need to tell it about one handler and the Assembly
             // This will make the MediatR service aware of all the handlers made
             services.AddMediatR(typeof(OperationList.Handler).Assembly);
-            
+
             // Add FluentValidation to controllers
-            services.AddControllers().AddFluentValidation(cfg => {
+            services.AddControllers().AddFluentValidation(cfg =>
+            {
                 cfg.RegisterValidatorsFromAssemblyContaining<OperationCreate>();
             });
+
+            // configure identity from efcore
+            var builder = services.AddIdentityCore<AppUser>();
+            var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
+
+            // create and manage user setup configured
+            identityBuilder.AddEntityFrameworkStores<DataContext>();
+            identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+            
+            // This will need to be fixed but for now just add this service here to get past system clock err
+            services.AddAuthentication();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -70,7 +83,7 @@ namespace API
 
             // make app use cors. Enable cors
             app.UseCors("CorsPolicy");
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
