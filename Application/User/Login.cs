@@ -6,7 +6,6 @@ using Domain;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Application.User;
 using Application.Interfaces;
 
 // return new User{
