@@ -7,6 +7,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Application.User;
+using Application.Interfaces;
 
 // return new User{
 //     DisplayName = user.DisplayName,
@@ -39,11 +40,13 @@ namespace Application.User
         {
             private readonly UserManager<AppUser> _userManager;
             private readonly SignInManager<AppUser> _signInManager;
+            private readonly IJwtGenerator _jwtGenerator;
 
-            public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+            public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
             {
-                this._signInManager = signInManager;
-                this._userManager = userManager;
+                _jwtGenerator = jwtGenerator;
+                _signInManager = signInManager;
+                _userManager = userManager;
 
 
             }
@@ -65,7 +68,7 @@ namespace Application.User
                     return new User
                     {
                         DisplayName = user.DisplayName,
-                        Token = "Will be a token later",
+                        Token = _jwtGenerator.CreateToken(user),
                         Username = user.UserName,
                         Image = null
                     };
