@@ -26,7 +26,7 @@ const OperationDetails: React.FC<RouteComponentProps<DetailParams>> = ({
 
   if (loadingInitial) return <LoadingComponent content='Loading operation...' />;
 
-  if (!operation) return <h2>Event not found</h2>;
+  if (!operation) return <h2>Operation not found</h2>;
 
   return (
     <Grid>

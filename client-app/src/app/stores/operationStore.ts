@@ -3,7 +3,7 @@ import { createContext, SyntheticEvent } from 'react';
 import { IOperation } from '../models/operation';
 import agent from '../api/agent';
 
-configure({enforceActions: 'always'});
+configure({ enforceActions: 'always' });
 
 class OperationStore {
   @observable operationRegistry = new Map();
@@ -24,7 +24,7 @@ class OperationStore {
       const date = operation.date.split('T')[0];
       operations[date] = operations[date] ? [...operations[date], operation] : [operation];
       return operations;
-    }, {} as {[key: string]: IOperation[]}));
+    }, {} as { [key: string]: IOperation[] }));
   }
 
   @action loadOperations = async () => {
@@ -38,7 +38,6 @@ class OperationStore {
         });
         this.loadingInitial = false;
       })
-      console.log(this.groupOperationsByDate(operations));
     } catch (error) {
       runInAction('load operations error', () => {
         this.loadingInitial = false;
@@ -54,7 +53,7 @@ class OperationStore {
       this.loadingInitial = true;
       try {
         operation = await agent.Operations.details(id);
-        runInAction('getting operation',() => {
+        runInAction('getting operation', () => {
           this.operation = operation;
           this.loadingInitial = false;
         })
@@ -62,6 +61,7 @@ class OperationStore {
         runInAction('get operation error', () => {
           this.loadingInitial = false;
         })
+        console.log(error);
       }
     }
   }
