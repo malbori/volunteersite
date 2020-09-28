@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using FluentValidation;
 using MediatR;
 using Persistence;
@@ -50,7 +52,7 @@ namespace Application.Operations
 
                 if (operation == null)
                 {
-                    throw new Exception("Could not find Event");
+                    throw new RestException(HttpStatusCode.NotFound, new {operation = "Not found"});
                 }
 
                 operation.Title = req.Title ?? operation.Title;
