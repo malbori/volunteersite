@@ -1,18 +1,19 @@
 import React, { useContext, Fragment } from 'react';
 import { Item, Label } from 'semantic-ui-react';
 import { observer } from 'mobx-react-lite';
-import OperationStore from '../../../app/stores/operationStore';
 import OperationListItem from './OperationListItem';
+import { RootStoreContext } from '../../../app/stores/rootStore';
+import {format} from 'date-fns';
 
 const OperationList: React.FC = () => {
-  const operationStore = useContext(OperationStore);
-  const { operationsByDate } = operationStore;
+  const rootStore = useContext(RootStoreContext);
+  const { operationsByDate } = rootStore.operationStore;
   return (
     <Fragment>
       {operationsByDate.map(([group, operations]) => (
         <Fragment key={group}>
           <Label size='large' color='blue'>
-            {group}
+            {format(Date.parse(group), 'eeee do MMMM')}
           </Label>
           <Item.Group divided>
             {operations.map(operation => (

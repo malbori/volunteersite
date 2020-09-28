@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Segment, Form, Button, Grid } from 'semantic-ui-react';
 import { OperationFormValues } from '../../../app/models/operation';
 import { v4 as uuid } from 'uuid';
-import OperationStore from '../../../app/stores/operationStore';
 import { observer } from 'mobx-react-lite';
 import { RouteComponentProps } from 'react-router';
 import { Form as FinalForm, Field } from 'react-final-form';
@@ -18,6 +17,7 @@ import {
   composeValidators,
   hasLengthGreaterThan
 } from 'revalidate';
+import { RootStoreContext } from '../../../app/stores/rootStore';
 
 const validate = combineValidators({
   title: isRequired({ message: 'The event title is required' }),
@@ -42,13 +42,13 @@ const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
   history
 }) => {
-  const operationStore = useContext(OperationStore);
+  const rootStore = useContext(RootStoreContext);
   const {
     createOperation,
     editOperation,
     submitting,
     loadOperation
-  } = operationStore;
+  } = rootStore.operationStore;
 
   const [operation, setOperation] = useState(new OperationFormValues());
   const [loading, setLoading] = useState(false);
@@ -149,8 +149,8 @@ const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({
                 <Button
                   onClick={
                     operation.id
-                      ? () => history.push(`/operation/${operation.id}`)
-                      : () => history.push('/operation')
+                      ? () => history.push(`/operations/${operation.id}`)
+                      : () => history.push('/operations')
                   }
                   disabled={loading}
                   floated='right'
