@@ -3,7 +3,7 @@ import { Container } from 'semantic-ui-react';
 import NavBar from '../../features/nav/NavBar';
 import OperationDashboard from '../../features/operations/dashboard/OperationDashboard';
 import { observer } from 'mobx-react-lite';
-import { Route, withRouter, RouteComponentProps } from 'react-router-dom';
+import { Route, withRouter, RouteComponentProps, Switch } from 'react-router-dom';
 import HomePage from '../../features/home/HomePage';
 import OperationForm from '../../features/operations/form/OperationForm';
 import OperationDetails from '../../features/operations/details/OperationDetails';
@@ -14,8 +14,9 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <Fragment>
-      <Route exact path='/' component={HomePage} />
-      <Route path={'/(.+)'} render={() => (
+      <Switch>
+        <Route exact path='/' component={HomePage} />
+        <Route path={'/(.+)'} render={() => (
           <Fragment>
             <NavBar />
             <Container style={{ marginTop: '7em' }}>
@@ -29,8 +30,10 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             </Container>
           </Fragment>
         )}
-      />
-      <Route component={NotFound} />
+        />
+        <Route component={NotFound} />
+      </Switch>
+
     </Fragment>
   );
 };
