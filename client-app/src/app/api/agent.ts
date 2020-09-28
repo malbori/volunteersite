@@ -1,11 +1,13 @@
 import axios, { AxiosResponse } from 'axios';
 import { IOperation } from '../models/operation';
+import { history } from '../..';
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
 axios.interceptors.response.use(undefined, error => {
     if (error.response.status === 404) {
-        throw error.response;
+        // redirect to not found component
+        history.push('/notfound');
     }
 })
 

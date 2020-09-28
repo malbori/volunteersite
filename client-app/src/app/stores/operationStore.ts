@@ -62,8 +62,6 @@ class OperationStore {
         runInAction('get operation error', () => {
           this.loadingInitial = false;
         })
-        //Utilize Router to redirect errors
-        throw error;
       }
     }
   }
