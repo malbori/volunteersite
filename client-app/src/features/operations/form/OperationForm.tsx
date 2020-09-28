@@ -149,8 +149,8 @@ const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({
                 <Button
                   onClick={
                     operation.id
-                      ? () => history.push(`/operations/${operation.id}`)
-                      : () => history.push('/operations')
+                      ? () => history.push(`/operation/${operation.id}`)
+                      : () => history.push('/operation')
                   }
                   disabled={loading}
                   floated='right'
