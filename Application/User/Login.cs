@@ -6,13 +6,20 @@ using Domain;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
+using Application.User;
+
+// return new User{
+//     DisplayName = user.DisplayName,
+//     Token = "Will be a token later",
+//     Username = user.Username,
+//     Image = null
+// };
 
 namespace Application.User
 {
     public class Login
     {
-        public class Query : IRequest<AppUser>
+        public class Query : IRequest<User>
         {
             public string Email { get; set; }
             public string Password { get; set; }
@@ -28,7 +35,7 @@ namespace Application.User
             }
         }
 
-        public class Handler : IRequestHandler<Query, AppUser>
+        public class Handler : IRequestHandler<Query, User>
         {
             private readonly UserManager<AppUser> _userManager;
             private readonly SignInManager<AppUser> _signInManager;
@@ -41,20 +48,27 @@ namespace Application.User
 
             }
 
-            public async Task<AppUser> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<User> Handle(Query request, CancellationToken cancellationToken)
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
 
-                if (user ==null)
+                if (user == null)
                 {
                     throw new RestException(HttpStatusCode.Unauthorized);
                 }
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
-                if (result.Succeeded){
+                if (result.Succeeded)
+                {
                     // TODO: generate token
-                    return user;
+                    return new User
+                    {
+                        DisplayName = user.DisplayName,
+                        Token = "Will be a token later",
+                        Username = user.UserName,
+                        Image = null
+                    };
                 }
 
                 throw new RestException(HttpStatusCode.Unauthorized);
