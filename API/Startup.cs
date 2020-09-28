@@ -64,9 +64,10 @@ namespace API
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
 
+            //get secret jet fron token key config
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt => 
+                .AddJwtBearer(opt =>
                 {
                     opt.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -100,11 +101,14 @@ namespace API
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+            // make app use cors. Enable cors
+            app.UseCors("CorsPolicy");
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
-            // make app use cors. Enable cors
-            app.UseCors("CorsPolicy");
+
 
             app.UseEndpoints(endpoints =>
             {
