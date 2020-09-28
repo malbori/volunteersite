@@ -1,6 +1,7 @@
 import React from 'react';
 import { Segment, Grid, Icon } from 'semantic-ui-react';
 import { IOperation } from '../../../app/models/operation';
+import {format} from 'date-fns';
 
 const OperationDetailedInfo: React.FC<{operation: IOperation}> = ({operation}) => {
   return (
@@ -21,7 +22,7 @@ const OperationDetailedInfo: React.FC<{operation: IOperation}> = ({operation}) =
             <Icon name='calendar' size='large' color='teal' />
           </Grid.Column>
           <Grid.Column width={15}>
-            <span>{operation.date}</span>
+            <span>{format(operation.date, 'eeee do MMMM')} at {format(operation.date!, 'h:mm a')}</span>
           </Grid.Column>
         </Grid>
       </Segment>

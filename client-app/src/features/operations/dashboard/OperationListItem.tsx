@@ -2,6 +2,7 @@ import React from 'react';
 import { Item, Button, Segment, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { IOperation } from '../../../app/models/operation';
+import {format} from 'date-fns';
 
 const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) => {
   return (
@@ -18,7 +19,7 @@ const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) =
         </Item.Group>
       </Segment>
       <Segment>
-        <Icon name='clock' /> {operation.date}
+        <Icon name='clock' /> {format(operation.date, 'h:mm a')}
         <Icon name='marker' /> {operation.venue}, {operation.city}
       </Segment>
       <Segment secondary>Attendees will go here</Segment>
