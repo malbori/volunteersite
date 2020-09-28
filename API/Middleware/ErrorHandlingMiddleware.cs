@@ -35,7 +35,8 @@ namespace API.Middleware
         private async Task HandleExceptionAsync(HttpContext context, Exception ex, ILogger<ErrorHandlingMiddleware> logger)
         {
             object errors = null;
-
+            
+            // Capturing all exceptions in this handler now. So need to catch none rest err as well and return properly
             switch (ex)
             {
                 case RestException re:
@@ -50,6 +51,7 @@ namespace API.Middleware
                     break;
             }
 
+            // Return our errors as an a JSON object
             context.Response.ContentType = "applicatoin/json";
             if (errors != null)
             {
@@ -58,6 +60,7 @@ namespace API.Middleware
                     errors
                 });
 
+                // write out the response
                 await context.Response.WriteAsync(result);
             }
         }
