@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using Domain;
 
@@ -10,7 +11,9 @@ namespace Application.Operations
             CreateMap<Operation, OperationDto>();
             CreateMap<UserOperation, AttendeeDto>()
             .ForMember(m => m.UserName, op => op.MapFrom(s => s.AppUser.UserName))
-            .ForMember(m => m.DisplayName, op => op.MapFrom(s => s.AppUser.DisplayName));
+            .ForMember(m => m.DisplayName, op => op.MapFrom(s => s.AppUser.DisplayName))
+            .ForMember(m => m.Image, op => op
+                .MapFrom(s => s.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url));
         }
     }
 }

@@ -19,6 +19,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AutoMapper;
+using Infrastructure.Photos;
 
 namespace API
 {
@@ -104,6 +105,9 @@ namespace API
             // So in the case of an API controller this will have a lifetime of the entire Http request and then dispose of it once the request has finished.
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            // import cloudinary settings
+            services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
