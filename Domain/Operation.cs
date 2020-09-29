@@ -13,7 +13,7 @@ namespace Domain
         public string City {get; set; }
         public string Venue {get; set; }
 
-        public ICollection<UserOperation> UserOperations {get; set;}
+        public virtual ICollection<UserOperation> UserOperations {get; set;}
 
     }
 }

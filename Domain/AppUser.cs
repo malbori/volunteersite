@@ -7,6 +7,6 @@ namespace Domain
     {
         public string DisplayName {get; set;}
 
-        public ICollection<UserOperation> UserOperations {get; set;}
+        public virtual ICollection<UserOperation> UserOperations {get; set;}
     }
 }

@@ -32,7 +32,7 @@ namespace Application.Operations
 
             public async Task<OperationDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var operation = await _context.Operations.Include(x => x.UserOperations).ThenInclude(x => x.AppUser).SingleOrDefaultAsync(x => x.Id == request.Id);
+                var operation = await _context.Operations.FindAsync(request.Id);
 
                 if (operation == null)
                 {

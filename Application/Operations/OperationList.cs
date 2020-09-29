@@ -28,7 +28,7 @@ namespace Application.Operations
 
             public async Task<List<OperationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var events = await _context.Operations.Include(x => x.UserOperations).ThenInclude(x => x.AppUser).ToListAsync();
+                var events = await _context.Operations.ToListAsync();
 
                 return _mapper.Map<List<Operation>, List<OperationDto>>(events);
 
