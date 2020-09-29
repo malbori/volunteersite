@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using AutoMapper;
 
 namespace API
 {
@@ -35,6 +36,8 @@ namespace API
         {
             services.AddDbContext<DataContext>(x =>
             {
+                // add lazy loading
+                x.UseLazyLoadingProxies();
                 x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
 
@@ -52,9 +55,13 @@ namespace API
             // This will make the MediatR service aware of all the handlers made
             services.AddMediatR(typeof(OperationList.Handler).Assembly);
 
+            // use automapper for dto's
+            services.AddAutoMapper(typeof(OperationList.Handler));
+
             // Add authorization to controllers
             // Add FluentValidation to controllers
-            services.AddControllers(opt => {
+            services.AddControllers(opt =>
+            {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 opt.Filters.Add(new AuthorizeFilter(policy));
             }).AddFluentValidation(cfg =>
@@ -70,6 +77,13 @@ namespace API
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
 
+            services.AddAuthorization(option =>
+                option.AddPolicy("IsActivityHost", policy =>
+                {
+                    policy.Requirements.Add(new IsHostRequirement());
+                }));
+            services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
+            
             //get secret jet fron token key config
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

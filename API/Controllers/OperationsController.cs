@@ -13,7 +13,7 @@ namespace API.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<List<Operation>>> List()
+        public async Task<ActionResult<List<OperationDto>>> List()
         {
             // call Application layer to query data
             return await Mediator.Send(new OperationList.Query());
@@ -22,7 +22,7 @@ namespace API.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<Operation>> OperationDetails(Guid id)
+        public async Task<ActionResult<OperationDto>> OperationDetails(Guid id)
         {
             return await Mediator.Send(new OperationDetails.Query { Id = id });
         }
@@ -33,7 +33,14 @@ namespace API.Controllers
             return await Mediator.Send(command);
         }
 
+        [HttpPost("{id}/attend")]
+        public async Task<ActionResult<Unit>> Attend(Guid id)
+        {
+            return await Mediator.Send(new Attend.Command{Id = id});
+        }
+
         [HttpPut("{id}")]
+        [Authorize(Policy = "IsActivityHost")]
         public async Task<ActionResult<Unit>> Edit(Guid id, OperationEdit.Command command)
         {
             command.Id = id;
@@ -41,9 +48,17 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "IsActivityHost")]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
             return await Mediator.Send(new OperationDelete.Command{Id = id});
+        }
+
+
+        [HttpDelete("{id}/attend")]
+        public async Task<ActionResult<Unit>> Unattend(Guid id)
+        {
+            return await Mediator.Send(new Unattend.Command{Id = id});
         }
     }
 }

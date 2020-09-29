@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,24 +11,26 @@ namespace Application.Operations
 {
     public class OperationList
     {
-        public class Query : IRequest<List<Operation>> { }
+        public class Query : IRequest<List<OperationDto>> { }
 
-        public class Handler : IRequestHandler<Query, List<Operation>>
+        public class Handler : IRequestHandler<Query, List<OperationDto>>
         {
             //constructer
             private readonly DataContext _context;
-            
-            public Handler(DataContext context)
+            private readonly IMapper _mapper;
+
+            public Handler(DataContext context, IMapper mapper)
             {
+                _mapper = mapper;
                 _context = context;
 
             }
 
-            public async Task<List<Operation>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<OperationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var events = await _context.Operations.ToListAsync();
 
-                return events;
+                return _mapper.Map<List<Operation>, List<OperationDto>>(events);
 
             }
         }
