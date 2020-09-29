@@ -36,7 +36,7 @@ const OperationDetails: React.FC<RouteComponentProps<DetailParams>> = ({
         <OperationDetailedChat />
       </Grid.Column>
       <Grid.Column width={6}>
-        <OperationDetailedSidebar />
+        <OperationDetailedSidebar attendees={operation.attendees} />
       </Grid.Column>
     </Grid>
   );

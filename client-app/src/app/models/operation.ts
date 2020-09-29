@@ -6,6 +6,9 @@ export interface IOperation {
     date: Date;
     city: string;
     venue: string;
+    isGoing: boolean;
+    isHost: boolean;
+    attendees: IAttendee[]
 }
 
 export interface IOperationFormValues extends Partial<IOperation> {
@@ -25,7 +28,14 @@ export class OperationFormValues implements IOperationFormValues {
     constructor(init?: IOperationFormValues) {
         if (init && init.date) {
             init.time = init.date;
-        }
+        }  
         Object.assign(this, init);
     }
+}
+
+export interface IAttendee {
+    username: string;
+    displayName: string;
+    image: string;
+    isHost: boolean;
 }

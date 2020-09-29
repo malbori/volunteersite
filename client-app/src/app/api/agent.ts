@@ -48,7 +48,9 @@ const Operations = {
     details: (id: string) => requests.get(`/operations/${id}`),
     create: (operation: IOperation) => requests.post('/operations', operation),
     update: (operation: IOperation) => requests.put(`/operations/${operation.id}`, operation),
-    delete: (id: string) => requests.del(`/operations/${id}`)
+    delete: (id: string) => requests.del(`/operations/${id}`),
+    attend: (id: string) => requests.post(`/operations/${id}/attend`, {}),
+    unattend: (id: string) => requests.del(`/operations/${id}/attend`)
 }
 
 const User = {

@@ -47,7 +47,7 @@ namespace Persistence
 
             if (!context.Operations.Any())
             {
-                var activities = new List<Operation>
+                var operations = new List<Operation>
                 {
                     new Operation
                     {
@@ -279,7 +279,7 @@ namespace Persistence
                     }
                 };
 
-                await context.Operations.AddRangeAsync(activities);
+                await context.Operations.AddRangeAsync(operations);
                 await context.SaveChangesAsync();
             }
         }

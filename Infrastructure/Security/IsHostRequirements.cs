@@ -27,11 +27,11 @@ namespace Infrastructure.Security
         {
             var currentUserName = _httpContextAccessor.HttpContext.User?.Claims?.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            var activityId = Guid.Parse(_httpContextAccessor.HttpContext.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value.ToString());
+            var operationId = Guid.Parse(_httpContextAccessor.HttpContext.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value.ToString());
 
-            var activity = _context.Operations.FindAsync(activityId).Result;
+            var operation = _context.Operations.FindAsync(operationId).Result;
 
-            var host = activity.UserOperations.FirstOrDefault(x => x.IsHost);
+            var host = operation.UserOperations.FirstOrDefault(x => x.IsHost);
 
             if (host?.AppUser?.UserName == currentUserName)
                 context.Succeed(requirement);
