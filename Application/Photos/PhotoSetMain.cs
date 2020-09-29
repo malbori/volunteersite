@@ -11,7 +11,7 @@ using Persistence;
 
 namespace Application.Photos
 {
-    public class SetMain
+    public class PhotoSetMain
     {
         public class Command : IRequest
         {

@@ -11,7 +11,7 @@ using Persistence;
 
 namespace Application.Photos
 {
-    public class Delete
+    public class PhotoDelete
     {
         public class Command : IRequest
         {
