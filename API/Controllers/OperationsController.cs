@@ -33,6 +33,12 @@ namespace API.Controllers
             return await Mediator.Send(command);
         }
 
+        [HttpPost("{id}/attend")]
+        public async Task<ActionResult<Unit>> Attend(Guid id)
+        {
+            return await Mediator.Send(new Attend.Command{Id = id});
+        }
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Unit>> Edit(Guid id, OperationEdit.Command command)
         {
