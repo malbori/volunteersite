@@ -4,7 +4,8 @@ import { IOperation } from '../models/operation';
 import agent from '../api/agent';
 import { history } from '../..';
 import { toast } from 'react-toastify';
-import {RootStore} from './rootStore';
+import { RootStore } from './rootStore';
+import { setOperationProps, createAttendee } from '../common/util';
 
 export default class OperationStore {
   rootStore: RootStore;
@@ -17,20 +18,30 @@ export default class OperationStore {
   @observable loadingInitial = false;
   @observable submitting = false;
   @observable target = '';
+  @observable loading = false;
 
   @computed get operationsByDate() {
-    return this.groupOperationsByDate(Array.from(this.operationRegistry.values()))
+    return this.groupOperationsByDate(
+      Array.from(this.operationRegistry.values())
+    );
   }
 
   groupOperationsByDate(operations: IOperation[]) {
     const sortedOperations = operations.sort(
       (a, b) => a.date.getTime() - b.date.getTime()
-    )
-    return Object.entries(sortedOperations.reduce((operations, operation) => {
-      const date = operation.date.toISOString().split('T')[0];
-      operations[date] = operations[date] ? [...operations[date], operation] : [operation];
-      return operations;
-    }, {} as {[key: string]: IOperation[]}));
+    );
+    return Object.entries(
+      sortedOperations.reduce(
+        (operations, operation) => {
+          const date = operation.date.toISOString().split('T')[0];
+          operations[date] = operations[date]
+            ? [...operations[date], operation]
+            : [operation];
+          return operations;
+        },
+        {} as { [key: string]: IOperation[] }
+      )
+    );
   }
 
   @action loadOperations = async () => {
@@ -39,15 +50,15 @@ export default class OperationStore {
       const operations = await agent.Operations.list();
       runInAction('loading operations', () => {
         operations.forEach(operation => {
-          operation.date = new Date(operation.date);
+          setOperationProps(operation, this.rootStore.userStore.user!);
           this.operationRegistry.set(operation.id, operation);
         });
         this.loadingInitial = false;
-      })
+      });
     } catch (error) {
       runInAction('load operations error', () => {
         this.loadingInitial = false;
-      })
+      });
     }
   };
 
@@ -60,43 +71,49 @@ export default class OperationStore {
       this.loadingInitial = true;
       try {
         operation = await agent.Operations.details(id);
-        runInAction('getting operation',() => {
-          operation.date = new Date(operation.date);
+        runInAction('getting operation', () => {
+          setOperationProps(operation, this.rootStore.userStore.user!);
           this.operation = operation;
           this.operationRegistry.set(operation.id, operation);
           this.loadingInitial = false;
-        })
+        });
         return operation;
       } catch (error) {
         runInAction('get operation error', () => {
           this.loadingInitial = false;
-        })
+        });
         console.log(error);
       }
     }
-  }
+  };
 
   @action clearOperation = () => {
     this.operation = null;
-  }
+  };
 
   getOperation = (id: string) => {
     return this.operationRegistry.get(id);
-  }
+  };
 
   @action createOperation = async (operation: IOperation) => {
     this.submitting = true;
     try {
       await agent.Operations.create(operation);
+      const attendee = createAttendee(this.rootStore.userStore.user!);
+      attendee.isHost = true;
+      let attendees = [];
+      attendees.push(attendee);
+      operation.attendees = attendees;
+      operation.isHost = true;
       runInAction('create operation', () => {
         this.operationRegistry.set(operation.id, operation);
         this.submitting = false;
-      })
-      history.push(`/operations/${operation.id}`)
+      });
+      history.push(`/operations/${operation.id}`);
     } catch (error) {
       runInAction('create operation error', () => {
         this.submitting = false;
-      })
+      });
       toast.error('Problem submitting data');
       console.log(error.response);
     }
@@ -110,18 +127,21 @@ export default class OperationStore {
         this.operationRegistry.set(operation.id, operation);
         this.operation = operation;
         this.submitting = false;
-      })
-      history.push(`/operations/${operation.id}`)
+      });
+      history.push(`/operations/${operation.id}`);
     } catch (error) {
       runInAction('edit operation error', () => {
         this.submitting = false;
-      })
+      });
       toast.error('Problem submitting data');
       console.log(error);
     }
   };
 
-  @action deleteOperation = async (event: SyntheticEvent<HTMLButtonElement>, id: string) => {
+  @action deleteOperation = async (
+    event: SyntheticEvent<HTMLButtonElement>,
+    id: string
+  ) => {
     this.submitting = true;
     this.target = event.currentTarget.name;
     try {
@@ -130,13 +150,56 @@ export default class OperationStore {
         this.operationRegistry.delete(id);
         this.submitting = false;
         this.target = '';
-      })
+      });
     } catch (error) {
       runInAction('delete operation error', () => {
         this.submitting = false;
         this.target = '';
-      })
+      });
       console.log(error);
     }
-  }
+  };
+
+  @action attendOperation = async () => {
+    const attendee = createAttendee(this.rootStore.userStore.user!);
+    this.loading = true;
+    try {
+      await agent.Operations.attend(this.operation!.id);
+      runInAction(() => {
+        if (this.operation) {
+          this.operation.attendees.push(attendee);
+          this.operation.isGoing = true;
+          this.operationRegistry.set(this.operation.id, this.operation);
+          this.loading = false;
+        }
+      })
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      })
+      toast.error('Problem signing up to operation');
+    }
+  };
+
+  @action cancelAttendance = async () => {
+    this.loading = true;
+    try {
+      await agent.Operations.unattend(this.operation!.id);
+      runInAction(() => {
+        if (this.operation) {
+          this.operation.attendees = this.operation.attendees.filter(
+            a => a.username !== this.rootStore.userStore.user!.username
+          );
+          this.operation.isGoing = false;
+          this.operationRegistry.set(this.operation.id, this.operation);
+          this.loading = false;
+        }
+      })
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      })
+      toast.error('Problem cancelling attendance');
+    }
+  };
 }

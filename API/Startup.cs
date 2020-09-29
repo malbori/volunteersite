@@ -78,7 +78,7 @@ namespace API
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
 
             services.AddAuthorization(option =>
-                option.AddPolicy("IsActivityHost", policy =>
+                option.AddPolicy("IsOperationHost", policy =>
                 {
                     policy.Requirements.Add(new IsHostRequirement());
                 }));

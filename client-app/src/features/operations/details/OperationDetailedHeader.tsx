@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Segment, Item, Header, Button, Image } from 'semantic-ui-react';
 import { IOperation } from '../../../app/models/operation';
 import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
-import {format} from 'date-fns';
+import { format } from 'date-fns';
+import { RootStoreContext } from '../../../app/stores/rootStore';
 
 const operationImageStyle = {
   filter: 'brightness(30%)'
@@ -18,7 +19,11 @@ const operationImageTextStyle = {
   color: 'white'
 };
 
-const OperationDetailedHeader: React.FC<{operation: IOperation}> = ({operation}) => {
+const OperationDetailedHeader: React.FC<{ operation: IOperation }> = ({
+  operation
+}) => {
+  const rootStore = useContext(RootStoreContext);
+  const { attendOperation, cancelAttendance, loading } = rootStore.operationStore;
   return (
     <Segment.Group>
       <Segment basic attached='top' style={{ padding: '0' }}>
@@ -46,11 +51,24 @@ const OperationDetailedHeader: React.FC<{operation: IOperation}> = ({operation})
         </Segment>
       </Segment>
       <Segment clearing attached='bottom'>
-        <Button color='teal'>Join Operation</Button>
-        <Button>Cancel attendance</Button>
-        <Button as={Link} to={`/manage/${operation.id}`} color='orange' floated='right'>
-          Manage Event
-        </Button>
+        {operation.isHost ? (
+          <Button
+            as={Link}
+            to={`/manage/${operation.id}`}
+            color='orange'
+            floated='right'
+          >
+            Manage Event
+          </Button>
+        ) : operation.isGoing ? (
+          <Button loading={loading} onClick={cancelAttendance}>
+            Cancel attendance
+          </Button>
+        ) : (
+          <Button loading={loading} onClick={attendOperation} color='teal'>
+            Join Operation
+          </Button>
+        )}
       </Segment>
     </Segment.Group>
   );
