@@ -12,7 +12,7 @@ const NavBar: React.FC = () => {
       <Container>
         <Menu.Item header as={NavLink} exact to='/'>
           <img src='/assets/logo.png' alt='logo' style={{ marginRight: 10 }} />
-          Reoperations
+          Reoperation
         </Menu.Item>
         <Menu.Item name='Operations' as={NavLink} to='/operations' />
         <Menu.Item>
@@ -30,7 +30,7 @@ const NavBar: React.FC = () => {
               <Dropdown.Menu>
                 <Dropdown.Item
                   as={Link}
-                  to={`/profile/username`}
+                  to={`/profile/${user.username}`}
                   text='My profile'
                   icon='user'
                 />

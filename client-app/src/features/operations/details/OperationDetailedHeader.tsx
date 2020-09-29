@@ -22,6 +22,7 @@ const operationImageTextStyle = {
 const OperationDetailedHeader: React.FC<{ operation: IOperation }> = ({
   operation
 }) => {
+  const host = operation.attendees.filter(x => x.isHost)[0];
   const rootStore = useContext(RootStoreContext);
   const { attendOperation, cancelAttendance, loading } = rootStore.operationStore;
   return (
@@ -43,7 +44,10 @@ const OperationDetailedHeader: React.FC<{ operation: IOperation }> = ({
                 />
                 <p>{format(operation.date, 'eeee do MMMM')}</p>
                 <p>
-                  Hosted by <strong>Bob</strong>
+                  Hosted by{' '}
+                  <Link to={`/profile/${host.username}`}>
+                    <strong>{host.displayName}</strong>
+                  </Link>
                 </p>
               </Item.Content>
             </Item>
