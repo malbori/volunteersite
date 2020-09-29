@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect } from 'react';
 import { Container } from 'semantic-ui-react';
 import NavBar from '../../features/nav/NavBar';
-import OperationDashboard from '../../features/operations/dashboard/OperationDashboard';
+import OperationsDashboard from '../../features/operations/dashboard/OperationDashboard';
 import { observer } from 'mobx-react-lite';
 import {
   Route,
@@ -10,19 +10,19 @@ import {
   Switch
 } from 'react-router-dom';
 import HomePage from '../../features/home/HomePage';
-import OperationForm from '../../features/operations/form/OperationForm';
-import OperationDetails from '../../features/operations/details/OperationDetails';
+import OperationsForm from '../../features/operations/form/OperationForm';
+import OperationsDetails from '../../features/operations/details/OperationDetails';
 import NotFound from './NotFound';
-import {ToastContainer} from 'react-toastify';
-import LoginForm from '../../features/user/LoginForm';
+import { ToastContainer } from 'react-toastify';
 import { RootStoreContext } from '../stores/rootStore';
 import LoadingComponent from './LoadingComponent';
 import ModalContainer from '../common/modals/ModalContainer';
+import ProfilePage from '../../features/profiles/ProfilePage';
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
-  const {setAppLoaded, token, appLoaded} = rootStore.commonStore;
-  const {getUser} = rootStore.userStore;
+  const { setAppLoaded, token, appLoaded } = rootStore.commonStore;
+  const { getUser } = rootStore.userStore;
 
   useEffect(() => {
     if (token) {
@@ -32,7 +32,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
     }
   }, [getUser, setAppLoaded, token])
 
-  if (!appLoaded)  return <LoadingComponent content='Loading app...' />
+  if (!appLoaded) return <LoadingComponent content='Loading app...' />
 
   return (
     <Fragment>
@@ -46,14 +46,14 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <NavBar />
             <Container style={{ marginTop: '7em' }}>
               <Switch>
-                <Route exact path='/operations' component={OperationDashboard} />
-                <Route path='/operations/:id' component={OperationDetails} />
+                <Route exact path='/operations' component={OperationsDashboard} />
+                <Route path='/operations/:id' component={OperationsDetails} />
                 <Route
                   key={location.key}
-                  path={['/createOperation', '/manage/:id']}
-                  component={OperationForm}
+                  path={['/createOperations', '/manage/:id']}
+                  component={OperationsForm}
                 />
-                <Route path='/login' component={LoginForm} />
+                <Route path='/profile/:username' component={ProfilePage} />
                 <Route component={NotFound} />
               </Switch>
             </Container>

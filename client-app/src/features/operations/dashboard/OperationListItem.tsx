@@ -12,12 +12,20 @@ const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) =
       <Segment>
         <Item.Group>
           <Item>
-            <Item.Image size='tiny' circular src={host.image || '/assets/user.png'} />
+            <Item.Image
+              size='tiny'
+              circular
+              src={host.image || '/assets/user.png'}
+              style={{ marginBottom: 3 }}
+            />
             <Item.Content>
               <Item.Header as={Link} to={`/operations/${operation.id}`}>
                 {operation.title}
               </Item.Header>
-              <Item.Description>Hosted by {host.displayName}</Item.Description>
+              <Item.Description>
+                Hosted by
+                <Link to={`/profile/${host.username}`}> {host.displayName}</Link>
+              </Item.Description>
               {operation.isHost && (
                 <Item.Description>
                   <Label
