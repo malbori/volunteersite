@@ -3,38 +3,44 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Errors;
+using AutoMapper;
 using Domain;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Operations
 {
     public class OperationDetails
     {
-        public class Query : IRequest<Operation>
+        public class Query : IRequest<OperationDto>
         {
             public Guid Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Operation>
+        public class Handler : IRequestHandler<Query, OperationDto>
         {
             //constructer
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly IMapper _mapper;
+            public Handler(DataContext context, IMapper mapper)
             {
+                _mapper = mapper;
                 _context = context;
 
             }
 
-            public async Task<Operation> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<OperationDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var operation = await _context.Operations.FindAsync(request.Id);
-                
+                var operation = await _context.Operations.Include(x => x.UserOperations).ThenInclude(x => x.AppUser).SingleOrDefaultAsync(x => x.Id == request.Id);
+
                 if (operation == null)
                 {
                     throw new RestException(HttpStatusCode.NotFound, new { operation = "Not found" });
                 }
-                return operation;
+
+                var eventToReturn = _mapper.Map<Operation, OperationDto>(operation);
+                return eventToReturn;
 
             }
         }

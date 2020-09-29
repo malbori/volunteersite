@@ -13,7 +13,7 @@ namespace API.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<List<Operation>>> List()
+        public async Task<ActionResult<List<OperationDto>>> List()
         {
             // call Application layer to query data
             return await Mediator.Send(new OperationList.Query());
@@ -22,7 +22,7 @@ namespace API.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<Operation>> OperationDetails(Guid id)
+        public async Task<ActionResult<OperationDto>> OperationDetails(Guid id)
         {
             return await Mediator.Send(new OperationDetails.Query { Id = id });
         }

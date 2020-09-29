@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using AutoMapper;
 
 namespace API
 {
@@ -51,6 +52,9 @@ namespace API
             // Only need to tell it about one handler and the Assembly
             // This will make the MediatR service aware of all the handlers made
             services.AddMediatR(typeof(OperationList.Handler).Assembly);
+
+            // use automapper for dto's
+            services.AddAutoMapper(typeof(OperationList.Handler));
 
             // Add authorization to controllers
             // Add FluentValidation to controllers
