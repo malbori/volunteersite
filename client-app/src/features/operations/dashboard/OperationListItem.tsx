@@ -1,22 +1,22 @@
-import React from 'react';
-import { Item, Button, Segment, Icon, Label } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { IOperation } from '../../../app/models/operation';
-import { format } from 'date-fns';
-import OperationListItemAttendees from './OperationListItemAttendees';
+import React from "react";
+import { Item, Button, Segment, Icon, Label } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import { IOperation } from "../../../app/models/operation";
+import { format } from "date-fns";
+import OperationListItemAttendees from "./OperationListItemAttendees";
 
 const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) => {
-  const host = operation.attendees.filter(x => x.isHost)[0];
+  const host = operation.attendees.filter((x) => x.isHost)[0];
   return (
     <Segment.Group>
       <Segment>
         <Item.Group>
           <Item>
             <Item.Image
-              size='tiny'
+              size="tiny"
               circular
-              src={host.image || '/assets/user.png'}
-              style={{ marginBottom: 3 }}
+              src={host?.image || "/assets/user.png"}
+              style={{ marginBottom: 4 }}
             />
             <Item.Content>
               <Item.Header as={Link} to={`/operations/${operation.id}`}>
@@ -24,14 +24,17 @@ const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) =
               </Item.Header>
               <Item.Description>
                 Hosted by
-                <Link to={`/profile/${host.username}`}> {host.displayName}</Link>
+                <Link to={`/profile/${host.username}`}>
+                  {" "}
+                  {host.displayName}
+                </Link>
               </Item.Description>
               {operation.isHost && (
                 <Item.Description>
                   <Label
                     basic
-                    color='orange'
-                    content='You are hosting this operation'
+                    color="orange"
+                    content="You are hosting the operation"
                   />
                 </Item.Description>
               )}
@@ -39,8 +42,8 @@ const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) =
                 <Item.Description>
                   <Label
                     basic
-                    color='green'
-                    content='You are going to this operation'
+                    color="green"
+                    content="You are going to this operation"
                   />
                 </Item.Description>
               )}
@@ -49,8 +52,8 @@ const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) =
         </Item.Group>
       </Segment>
       <Segment>
-        <Icon name='clock' /> {format(operation.date, 'h:mm a')}
-        <Icon name='marker' /> {operation.venue}, {operation.city}
+        <Icon name="clock" /> {format(operation.date, "h:mm a")}
+        <Icon name="marker" /> {operation.venue}, {operation.city}
       </Segment>
       <Segment secondary>
         <OperationListItemAttendees attendees={operation.attendees} />
@@ -60,9 +63,9 @@ const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) =
         <Button
           as={Link}
           to={`/operations/${operation.id}`}
-          floated='right'
-          content='View'
-          color='blue'
+          floated="right"
+          content="View"
+          color="blue"
         />
       </Segment>
     </Segment.Group>

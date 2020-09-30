@@ -18,7 +18,7 @@ namespace Persistence
         public DbSet<UserOperation> UserOperations { get; set; }
 
         public DbSet<Photo> Photos {get; set;}
-
+        public DbSet<Comment> Comments { get; set; }
 
         // Configure entities while migration is being created
         protected override void OnModelCreating(ModelBuilder builder)
