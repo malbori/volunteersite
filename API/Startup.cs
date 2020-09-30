@@ -22,6 +22,7 @@ using AutoMapper;
 using Infrastructure.Photos;
 using API.SignalR;
 using System.Threading.Tasks;
+using Application.Profiles;
 
 namespace API
 {
@@ -122,8 +123,11 @@ namespace API
             // Scoped means its scoped to the request itself.  
             // So in the case of an API controller this will have a lifetime of the entire Http request and then dispose of it once the request has finished.
             services.AddScoped<IJwtGenerator, JwtGenerator>();
+
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            // Injecting ProfileReader into other classes
+            services.AddScoped<IProfileReader, ProfileReader>();
             // import cloudinary settings
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
