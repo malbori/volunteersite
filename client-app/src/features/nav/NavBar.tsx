@@ -1,40 +1,48 @@
-import React, { useContext } from 'react';
-import { Menu, Container, Button, Dropdown, Image } from 'semantic-ui-react';
-import { observer } from 'mobx-react-lite';
-import { NavLink, Link } from 'react-router-dom';
-import { RootStoreContext } from '../../app/stores/rootStore';
+import React, { useContext } from "react";
+import { Menu, Container, Button, Dropdown, Image } from "semantic-ui-react";
+import { observer } from "mobx-react-lite";
+import { NavLink, Link } from "react-router-dom";
+import { RootStoreContext } from "../../app/stores/rootStore";
 
 const NavBar: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
   const { user, logout } = rootStore.userStore;
   return (
-    <Menu fixed='top' inverted>
+    <Menu fixed="top" inverted>
       <Container>
-        <Menu.Item header as={NavLink} exact to='/'>
-          <img src='/assets/logo.png' alt='logo' style={{ marginRight: 10 }} />
-          Reoperation
+        <Menu.Item header as={NavLink} exact to="/">
+          <img
+            src="/assets/logo.png"
+            alt="logo"
+            style={{ marginRight: "10px" }}
+          />
+          Reoperations
         </Menu.Item>
-        <Menu.Item name='Operations' as={NavLink} to='/operations' />
+        <Menu.Item name="Operations" as={NavLink} to="/operations" />
         <Menu.Item>
           <Button
             as={NavLink}
-            to='/createOperation'
+            to="/createOperation"
             positive
-            content='Create Operation'
+            content="Create Operation"
           />
         </Menu.Item>
         {user && (
-          <Menu.Item position='right'>
-            <Image avatar spaced='right' src={user.image || '/assets/user.png'} />
-            <Dropdown pointing='top left' text={user.displayName}>
+          <Menu.Item position="right">
+            <Image
+              avatar
+              spaced="right"
+              src={user.image || "/assets/user.png"}
+            />
+            <Dropdown pointing="top left" text={user.displayName}>
               <Dropdown.Menu>
                 <Dropdown.Item
                   as={Link}
                   to={`/profile/${user.username}`}
-                  text='My profile'
-                  icon='user'
+                  text="My profile"
+                  icon="user"
                 />
-                <Dropdown.Item onClick={logout} text='Logout' icon='power' />
+                <Dropdown.Item onClick={logout} text="Logout" icon="power" />
               </Dropdown.Menu>
             </Dropdown>
           </Menu.Item>
@@ -43,5 +51,4 @@ const NavBar: React.FC = () => {
     </Menu>
   );
 };
-
 export default observer(NavBar);

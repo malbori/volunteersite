@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AutoMapper;
 using Infrastructure.Photos;
+using API.SignalR;
+using System.Threading.Tasks;
 
 namespace API
 {
@@ -48,7 +50,7 @@ namespace API
             {
                 options.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
                 });
             });
 
@@ -58,6 +60,8 @@ namespace API
 
             // use automapper for dto's
             services.AddAutoMapper(typeof(OperationList.Handler));
+
+            services.AddSignalR();
 
             // Add authorization to controllers
             // Add FluentValidation to controllers
@@ -84,7 +88,7 @@ namespace API
                     policy.Requirements.Add(new IsHostRequirement());
                 }));
             services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
-            
+
             //get secret jet fron token key config
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -96,6 +100,20 @@ namespace API
                         IssuerSigningKey = key,
                         ValidateAudience = false,
                         ValidateIssuer = false
+                    };
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken)
+                                && (path.StartsWithSegments("/chat")))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
@@ -137,6 +155,7 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }

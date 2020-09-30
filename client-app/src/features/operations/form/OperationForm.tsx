@@ -1,53 +1,53 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Segment, Form, Button, Grid } from 'semantic-ui-react';
-import { OperationFormValues } from '../../../app/models/operation';
-import { v4 as uuid } from 'uuid';
-import { observer } from 'mobx-react-lite';
-import { RouteComponentProps } from 'react-router';
-import { Form as FinalForm, Field } from 'react-final-form';
-import TextInput from '../../../app/common/form/TextInput';
-import TextAreaInput from '../../../app/common/form/TextAreaInput';
-import SelectInput from '../../../app/common/form/SelectInput';
-import DateInput from '../../../app/common/form/DateInput';
-import { category } from '../../../app/common/options/categoryOptions';
-import { combineDateAndTime } from '../../../app/common/util';
+import React, { useState, useContext, useEffect } from "react";
+import { Segment, Form, Button, Grid } from "semantic-ui-react";
+import { OperationFormValues } from "../../../app/models/operation";
+import { v4 as uuid } from "uuid";
+import { observer } from "mobx-react-lite";
+import { RouteComponentProps } from "react-router-dom";
+import { Form as FinalForm, Field } from "react-final-form";
+import TextInput from "../../../app/common/form/TextInput";
+import TextAreaInput from "../../../app/common/form/TextAreaInput";
+import SelectInput from "../../../app/common/form/SelectInput";
+import { category } from "../../../app/common/options/categoryOptions";
+import DateInput from "../../../app/common/form/DateInput";
+import { combineDateAndTime } from "../../../app/common/util/util";
 import {
   combineValidators,
   isRequired,
   composeValidators,
-  hasLengthGreaterThan
-} from 'revalidate';
-import { RootStoreContext } from '../../../app/stores/rootStore';
+  hasLengthGreaterThan,
+} from "revalidate";
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 const validate = combineValidators({
-  title: isRequired({ message: 'The event title is required' }),
-  category: isRequired('Category'),
+  title: isRequired({ message: "The event is required" }),
+  category: isRequired("Category"),
   description: composeValidators(
-    isRequired('Description'),
+    isRequired("Description"),
     hasLengthGreaterThan(4)({
-      message: 'Description needs to be at least 5 characters'
+      message: "Description needs to be at least 5 characters",
     })
   )(),
-  city: isRequired('City'),
-  venue: isRequired('Venue'),
-  date: isRequired('Date'),
-  time: isRequired('Time')
+  city: isRequired("City"),
+  venue: isRequired("Venue"),
+  date: isRequired("Date"),
+  time: isRequired("Time"),
 });
 
-interface DetailParams {
+interface DetailParam {
   id: string;
 }
 
-const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({
+const OperationForm: React.FC<RouteComponentProps<DetailParam>> = ({
   match,
-  history
+  history,
 }) => {
   const rootStore = useContext(RootStoreContext);
   const {
+    submitting,
+    loadOperation,
     createOperation,
     editOperation,
-    submitting,
-    loadOperation
   } = rootStore.operationStore;
 
   const [operation, setOperation] = useState(new OperationFormValues());
@@ -57,9 +57,7 @@ const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({
     if (match.params.id) {
       setLoading(true);
       loadOperation(match.params.id)
-        .then(operation => {
-          setOperation(new OperationFormValues(operation));
-        })
+        .then((operation) => setOperation(new OperationFormValues(operation)))
         .finally(() => setLoading(false));
     }
   }, [loadOperation, match.params.id]);
@@ -71,7 +69,7 @@ const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({
     if (!operation.id) {
       let newOperation = {
         ...operation,
-        id: uuid()
+        id: uuid(),
       };
       createOperation(newOperation);
     } else {
@@ -90,72 +88,71 @@ const OperationForm: React.FC<RouteComponentProps<DetailParams>> = ({
             render={({ handleSubmit, invalid, pristine }) => (
               <Form onSubmit={handleSubmit} loading={loading}>
                 <Field
-                  name='title'
-                  placeholder='Title'
+                  name="title"
+                  placeholder="Title"
                   value={operation.title}
                   component={TextInput}
                 />
                 <Field
-                  name='description'
-                  placeholder='Description'
+                  name="description"
+                  placeholder="Description"
                   rows={3}
                   value={operation.description}
                   component={TextAreaInput}
                 />
                 <Field
-                  component={SelectInput}
+                  placeholder="Category"
                   options={category}
-                  name='category'
-                  placeholder='Category'
+                  name="category"
                   value={operation.category}
+                  component={SelectInput}
                 />
-                <Form.Group widths='equal'>
+                <Form.Group widths="equal">
                   <Field
-                    component={DateInput}
-                    name='date'
+                    name="date"
+                    placeholder="Date"
                     date={true}
-                    placeholder='Date'
                     value={operation.date}
+                    component={DateInput}
                   />
                   <Field
-                    component={DateInput}
-                    name='time'
+                    name="time"
+                    placeholder="Time"
                     time={true}
-                    placeholder='Time'
                     value={operation.time}
+                    component={DateInput}
                   />
                 </Form.Group>
-
                 <Field
-                  component={TextInput}
-                  name='city'
-                  placeholder='City'
+                  name="city"
+                  placeholder="City"
                   value={operation.city}
+                  component={TextInput}
                 />
                 <Field
-                  component={TextInput}
-                  name='venue'
-                  placeholder='Venue'
+                  name="venue"
+                  placeholder="Venue"
                   value={operation.venue}
+                  component={TextInput}
                 />
                 <Button
                   loading={submitting}
                   disabled={loading || invalid || pristine}
-                  floated='right'
+                  floated="right"
                   positive
-                  type='submit'
-                  content='Submit'
+                  type="submit"
+                  content="Submit"
                 />
                 <Button
                   onClick={
                     operation.id
                       ? () => history.push(`/operations/${operation.id}`)
-                      : () => history.push('/operations')
+                      : () => history.push("/operations")
                   }
                   disabled={loading}
-                  floated='right'
-                  type='button'
-                  content='Cancel'
+                  floated="right"
+                  type="button"
+                  content="Cancel"
                 />
               </Form>
             )}
