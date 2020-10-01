@@ -1,23 +1,30 @@
-import React from 'react';
-import { List, Image, Popup } from 'semantic-ui-react';
-import { IAttendee } from '../../../app/models/operation';
+import React from "react";
+import { List, Image, Popup } from "semantic-ui-react";
+import { IAttendee } from "../../../app/models/operation";
 
-interface IProps {
+interface Iprops {
   attendees: IAttendee[];
 }
 
-const OperationListItemAttendees: React.FC<IProps> = ({ attendees }) => {
+const styles = {
+  borderColor: "orange",
+  borderwidth: 2,
+};
+
+const OperationsListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
   return (
     <List horizontal>
-      {attendees.map(attendee => (
-        <List.Item key={attendee.username}>
+      {attendees.map((attendee) => (
+        <List.Item>
           <Popup
             header={attendee.displayName}
             trigger={
               <Image
-                size='mini'
+                size="mini"
                 circular
-                src={attendee.image || '/assets/user.png'}
+                src={attendee.image || "/assets/user.png"}
+                bordered
+                style={attendee.following ? styles : null}
               />
             }
           />
@@ -27,4 +34,4 @@ const OperationListItemAttendees: React.FC<IProps> = ({ attendees }) => {
   );
 };
 
-export default OperationListItemAttendees;
+export default OperationsListItemAttendees;

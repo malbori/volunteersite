@@ -1,18 +1,18 @@
-import React from 'react';
-import { IProfile } from '../../app/models/profile';
-import { Form as FinalForm, Field } from 'react-final-form';
-import { observer } from 'mobx-react-lite';
-import { combineValidators, isRequired } from 'revalidate';
-import { Form, Button } from 'semantic-ui-react';
-import TextInput from '../../app/common/form/TextInput';
-import TextAreaInput from '../../app/common/form/TextAreaInput';
+import React from "react";
+import { combineValidators, isRequired } from "revalidate";
+import { IProfile } from "../../app/models/profile";
+import { Form as FinalForm, Field } from "react-final-form";
+import TextInput from "../../app/common/form/TextInput";
+import TextAreaInput from "../../app/common/form/TextAreaInput";
+import { Button, Form } from "semantic-ui-react";
+import { observer } from "mobx-react-lite";
 
 const validate = combineValidators({
-  displayName: isRequired('displayName')
+  displayName: isRequired("displayName"),
 });
 
 interface IProps {
-  updateProfile: (profile: Partial<IProfile>) => void;
+  updateProfile: (profile: IProfile) => void;
   profile: IProfile;
 }
 
@@ -25,24 +25,24 @@ const ProfileEditForm: React.FC<IProps> = ({ updateProfile, profile }) => {
       render={({ handleSubmit, invalid, pristine, submitting }) => (
         <Form onSubmit={handleSubmit} error>
           <Field
-            name='displayName'
+            name="displayName"
             component={TextInput}
-            placeholder='Display Name'
+            placeholder="Display Name"
             value={profile!.displayName}
           />
           <Field
-            name='bio'
+            name="bio"
             component={TextAreaInput}
             rows={3}
-            placeholder='Bio'
+            placeholder="Bio"
             value={profile!.bio}
           />
-          <Button 
+          <Button
             loading={submitting}
-            floated='right'
+            floated="right"
             disabled={invalid || pristine}
             positive
-            content='Update profile'
+            content="Update profile"
           />
         </Form>
       )}

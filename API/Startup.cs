@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AutoMapper;
 using Infrastructure.Photos;
+using API.SignalR;
+using System.Threading.Tasks;
+using Application.Profiles;
 
 namespace API
 {
@@ -48,7 +51,7 @@ namespace API
             {
                 options.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
                 });
             });
 
@@ -58,6 +61,8 @@ namespace API
 
             // use automapper for dto's
             services.AddAutoMapper(typeof(OperationList.Handler));
+
+            services.AddSignalR();
 
             // Add authorization to controllers
             // Add FluentValidation to controllers
@@ -84,7 +89,7 @@ namespace API
                     policy.Requirements.Add(new IsHostRequirement());
                 }));
             services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
-            
+
             //get secret jet fron token key config
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -97,6 +102,20 @@ namespace API
                         ValidateAudience = false,
                         ValidateIssuer = false
                     };
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken)
+                                && (path.StartsWithSegments("/chat")))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
 
@@ -104,8 +123,11 @@ namespace API
             // Scoped means its scoped to the request itself.  
             // So in the case of an API controller this will have a lifetime of the entire Http request and then dispose of it once the request has finished.
             services.AddScoped<IJwtGenerator, JwtGenerator>();
+
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            // Injecting ProfileReader into other classes
+            services.AddScoped<IProfileReader, ProfileReader>();
             // import cloudinary settings
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
@@ -137,6 +159,7 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }

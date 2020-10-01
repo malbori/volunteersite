@@ -1,21 +1,19 @@
-import React, { useContext, useEffect } from 'react';
-import { Grid } from 'semantic-ui-react';
-import OperationList from './OperationList';
-import { observer } from 'mobx-react-lite';
-import LoadingComponent from '../../../app/layout/LoadingComponent';
-import { RootStoreContext } from '../../../app/stores/rootStore';
+import React, { useContext, useEffect } from "react";
+import { Grid } from "semantic-ui-react";
+import OperationList from "./OperationList";
+import { observer } from "mobx-react-lite";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 const OperationDashboard: React.FC = () => {
-
   const rootStore = useContext(RootStoreContext);
-  const {loadOperations, loadingInitial} = rootStore.operationStore;
-
+  const { loadOperations, loadingInitial } = rootStore.operationStore;
   useEffect(() => {
     loadOperations();
   }, [loadOperations]);
 
   if (loadingInitial)
-    return <LoadingComponent content='Loading operations' />;
+    return <LoadingComponent content="Loading operations..." />;
 
   return (
     <Grid>
