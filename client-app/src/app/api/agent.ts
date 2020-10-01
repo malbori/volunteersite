@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { IOperation } from "../models/operation";
+import { IOperation, IOperationEnvelope } from "../models/operation";
 import { history } from "../..";
 import { toast } from "react-toastify";
 import { IUser, IUserFormValues } from "../models/user";
@@ -66,7 +66,7 @@ const requests = {
 };
 
 const Operations = {
-  list: (): Promise<IOperation[]> => requests.get("/operations"),
+  list: (limit?: number, page?: number): Promise<IOperationEnvelope> => requests.get(`/operations?limit=${limit}&offset=${page ? page * limit! : 0}`),
   details: (id: string) => requests.get(`/operations/${id}`),
   create: (operation: IOperation) => requests.post("/operations", operation),
   update: (operation: IOperation) =>

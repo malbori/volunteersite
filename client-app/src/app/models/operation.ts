@@ -1,3 +1,9 @@
+export interface IOperationEnvelope {
+  operations: IOperation[];
+  operationCount: number;
+}
+
+
 export interface IOperation {
   id: string;
   title: string;

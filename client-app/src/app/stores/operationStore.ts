@@ -12,6 +12,8 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 
+const LIMIT = 2;
+
 export default class OperationStore {
   rootStore: RootStore;
   constructor(rootStore: RootStore) {
@@ -25,6 +27,16 @@ export default class OperationStore {
   @observable target = "";
   @observable loading = false;
   @observable.ref hubConnection: HubConnection | null = null;
+  @observable operationCount = 0;
+  @observable page = 0;
+
+  @computed get totalPages() {
+    return Math.ceil(this.operationCount / LIMIT);
+  }
+
+  @action setPage = (page: number) => {
+    this.page = page;
+  }
 
   @action createHubConnection = (operationId: string) => {
     this.hubConnection = new HubConnectionBuilder()
@@ -96,12 +108,14 @@ export default class OperationStore {
   @action loadOperations = async () => {
     this.loadingInitial = true;
     try {
-      const operations = await agent.Operations.list();
+      const operationsEnvelope = await agent.Operations.list(LIMIT, this.page);
+      const {operations, operationCount } = operationsEnvelope;
       runInAction("loading operations", () => {
         operations.forEach((operation) => {
           setOperationProps(operation, this.rootStore.userStore.user!);
           this.operationRegistry.set(operation.id, operation);
         });
+        this.operationCount = operationCount;
         this.loadingInitial = false;
       });
     } catch (error) {
