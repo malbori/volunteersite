@@ -31,12 +31,16 @@ export default class OperationStore {
   @observable page = 0;
 
   @computed get totalPages() {
+    if(this.operation){
+      console.log(this.operationCount.toString())
+
+    }
     return Math.ceil(this.operationCount / LIMIT);
   }
 
   @action setPage = (page: number) => {
     this.page = page;
-  }
+  };
 
   @action createHubConnection = (operationId: string) => {
     this.hubConnection = new HubConnectionBuilder()
@@ -109,7 +113,7 @@ export default class OperationStore {
     this.loadingInitial = true;
     try {
       const operationsEnvelope = await agent.Operations.list(LIMIT, this.page);
-      const {operations, operationCount } = operationsEnvelope;
+      const { operations, operationCount } = operationsEnvelope;
       runInAction("loading operations", () => {
         operations.forEach((operation) => {
           setOperationProps(operation, this.rootStore.userStore.user!);

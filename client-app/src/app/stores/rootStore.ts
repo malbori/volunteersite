@@ -1,12 +1,12 @@
 import OperationStore from "./operationStore";
 import UserStore from "./userStore";
 import { createContext } from "react";
-import { configure } from "mobx";
+//import { configure } from "mobx";
 import CommonStore from "./commonStore";
 import ModalStore from "./modalStore";
 import ProfileStore from "./profilesStore";
 
-configure({ enforceActions: "strict" });
+//configure({ enforceActions: "strict" });
 
 export class RootStore {
   operationStore: OperationStore;
