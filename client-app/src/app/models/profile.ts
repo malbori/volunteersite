@@ -8,7 +8,6 @@ export interface IProfile {
   followingCount: number;
   photos: IPhoto[];
 }
-
 export interface IPhoto {
   id: string;
   url: string;

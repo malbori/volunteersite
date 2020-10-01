@@ -1,8 +1,7 @@
-export interface IOperationEnvelope {
+export interface IOperationsEnvelope {
   operations: IOperation[];
   operationCount: number;
 }
-
 
 export interface IOperation {
   id: string;

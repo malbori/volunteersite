@@ -31,10 +31,6 @@ export default class OperationStore {
   @observable page = 0;
 
   @computed get totalPages() {
-    if(this.operation){
-      console.log(this.operationCount.toString())
-
-    }
     return Math.ceil(this.operationCount / LIMIT);
   }
 

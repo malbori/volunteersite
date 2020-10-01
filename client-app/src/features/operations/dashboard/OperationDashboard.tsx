@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Grid, Loader } from 'semantic-ui-react';
-import OperationList from './OperationList';
-import { observer } from 'mobx-react-lite';
-import LoadingComponent from '../../../app/layout/LoadingComponent';
-import { RootStoreContext } from '../../../app/stores/rootStore';
-import InfiniteScroll from 'react-infinite-scroller';
-//import OperationFilters from './OperationFilters';
+import React, { useContext, useEffect, useState } from "react";
+import { Grid, Button, Loader } from "semantic-ui-react";
+import OperationList from "./OperationList";
+import { observer } from "mobx-react-lite";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { RootStoreContext } from "../../../app/stores/rootStore";
+import InfiniteScroll from "react-infinite-scroller";
 
 const OperationDashboard: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
@@ -14,7 +13,7 @@ const OperationDashboard: React.FC = () => {
     loadingInitial,
     setPage,
     page,
-    totalPages
+    totalPages,
   } = rootStore.operationStore;
   const [loadingNext, setLoadingNext] = useState(false);
 
@@ -29,7 +28,7 @@ const OperationDashboard: React.FC = () => {
   }, [loadOperations]);
 
   if (loadingInitial && page === 0)
-    return <LoadingComponent content='Loading operations' />;
+    return <LoadingComponent content="Loading operations..." />;
 
   return (
     <Grid>
@@ -44,7 +43,7 @@ const OperationDashboard: React.FC = () => {
         </InfiniteScroll>
       </Grid.Column>
       <Grid.Column width={6}>
-        {/* <OperationFilters /> */}
+        <h2>Operation filters</h2>
       </Grid.Column>
       <Grid.Column width={10}>
         <Loader active={loadingNext} />
