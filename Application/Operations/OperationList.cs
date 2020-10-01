@@ -17,7 +17,7 @@ namespace Application.Operations
         public class OperationsEnvelope
         {
             public List<OperationDto> Operations { get; set; }
-            public int OperationsCount { get; set; }
+            public int OperationCount { get; set; }
         }
         public class Query : IRequest<OperationsEnvelope>
         {
@@ -65,14 +65,14 @@ namespace Application.Operations
                     queryable = queryable.Where(x => x.UserOperations.Any(a => a.AppUser.UserName == _userAccessor.GetCurrentUsername() && a.IsHost));
                 }
 
-                var operations = await queryable
+                var activities = await queryable
                     .Skip(request.Offset ?? 0)
                     .Take(request.Limit ?? 3).ToListAsync();
 
                 return new OperationsEnvelope
                 {
-                    Operations = _mapper.Map<List<Operation>, List<OperationDto>>(operations),
-                    OperationsCount = queryable.Count()
+                    Operations = _mapper.Map<List<Operation>, List<OperationDto>>(activities),
+                    OperationCount = queryable.Count()
                 };
             }
         }

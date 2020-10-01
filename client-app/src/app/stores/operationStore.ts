@@ -12,7 +12,7 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 
-const LIMIT = 2;
+const LIMIT = 3;
 
 export default class OperationStore {
   rootStore: RootStore;
@@ -108,8 +108,10 @@ export default class OperationStore {
   @action loadOperations = async () => {
     this.loadingInitial = true;
     try {
+
       const operationsEnvelope = await agent.Operations.list(LIMIT, this.page);
       const { operations, operationCount } = operationsEnvelope;
+      
       runInAction("loading operations", () => {
         operations.forEach((operation) => {
           setOperationProps(operation, this.rootStore.userStore.user!);
