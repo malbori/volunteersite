@@ -6,7 +6,12 @@ interface Iprops {
   attendees: IAttendee[];
 }
 
-const OperationListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
+const styles = {
+  borderColor: "orange",
+  borderwidth: 2,
+};
+
+const OperationsListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
   return (
     <List horizontal>
       {attendees.map((attendee) => (
@@ -18,6 +23,8 @@ const OperationListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
                 size="mini"
                 circular
                 src={attendee.image || "/assets/user.png"}
+                bordered
+                style={attendee.following ? styles : null}
               />
             }
           />
@@ -27,4 +34,4 @@ const OperationListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
   );
 };
 
-export default OperationListItemAttendees;
+export default OperationsListItemAttendees;
