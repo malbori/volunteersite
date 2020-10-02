@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction } from "mobx";
+import { observable, action, computed, runInAction, reaction, toJS } from "mobx";
 import { SyntheticEvent } from "react";
 import { IOperation } from "../models/operation";
 import agent from "../api/agent";
@@ -12,10 +12,21 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 
+const LIMIT = 3;
+
 export default class OperationStore {
   rootStore: RootStore;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
+
+    reaction(
+      () => this.predicate.keys(),
+      () => {
+        this.page = 0;
+        this.operationRegistry.clear();
+        this.loadOperations();
+      }
+    )
   }
 
   @observable operationRegistry = new Map();
@@ -25,10 +36,42 @@ export default class OperationStore {
   @observable target = "";
   @observable loading = false;
   @observable.ref hubConnection: HubConnection | null = null;
+  @observable operationCount = 0;
+  @observable page = 0;
+  @observable predicate = new Map();
+
+  @action setPredicate = (predicate: string, value: string | Date) => {
+    this.predicate.clear();
+    if (predicate !== 'all') {
+      this.predicate.set(predicate, value);
+    }
+  }
+
+  @computed get axiosParams() {
+    const params = new URLSearchParams();
+    params.append('limit', String(LIMIT));
+    params.append('offset', `${this.page ? this.page * LIMIT : 0}`);
+    this.predicate.forEach((value, key) => {
+      if (key === 'startDate') {
+        params.append(key, value.toISOString())
+      } else {
+        params.append(key, value)
+      }
+    })
+    return params;
+  }
+
+  @computed get totalPages() {
+    return Math.ceil(this.operationCount / LIMIT);
+  }
+
+  @action setPage = (page: number) => {
+    this.page = page;
+  };
 
   @action createHubConnection = (operationId: string) => {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5000/chat", {
+      .withUrl(process.env.REACT_APP_API_CHAT_URL!, {
         accessTokenFactory: () => this.rootStore.commonStore.token!,
       })
       .configureLogging(LogLevel.Information)
@@ -96,12 +139,16 @@ export default class OperationStore {
   @action loadOperations = async () => {
     this.loadingInitial = true;
     try {
-      const operations = await agent.Operations.list();
+
+      const operationsEnvelope = await agent.Operations.list(this.axiosParams);
+      const { operations, operationCount } = operationsEnvelope;
+
       runInAction("loading operations", () => {
         operations.forEach((operation) => {
           setOperationProps(operation, this.rootStore.userStore.user!);
           this.operationRegistry.set(operation.id, operation);
         });
+        this.operationCount = operationCount;
         this.loadingInitial = false;
       });
     } catch (error) {
@@ -116,7 +163,7 @@ export default class OperationStore {
     let operation = this.getOperation(id);
     if (operation) {
       this.operation = operation;
-      return operation;
+      return toJS(operation);
     } else {
       this.loadingInitial = true;
       try {
@@ -235,7 +282,7 @@ export default class OperationStore {
       runInAction(() => {
         if (this.operation) {
           this.operation.attendees = this.operation.attendees.filter(
-            (a) => a.username !== this.rootStore.userStore.user!.username
+            (a) => a.userName !== this.rootStore.userStore.user!.username
           );
           this.operation.isGoing = false;
           this.operationRegistry.set(this.operation.isGoing, this.operation);

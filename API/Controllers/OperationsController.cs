@@ -11,13 +11,14 @@ namespace API.Controllers
 {
     public class OperationsController : BaseController
     {
-
         [HttpGet]
-        public async Task<ActionResult<List<OperationDto>>> List()
+        public async Task<ActionResult<OperationList.OperationsEnvelope>> List(int? limit,
+            int? offset, bool isGoing, bool isHost, DateTime? startDate)
         {
-            // call Application layer to query data
-            return await Mediator.Send(new OperationList.Query());
+            return await Mediator.Send(new OperationList.Query(limit,
+                offset, isGoing, isHost, startDate));
         }
+
 
 
         [HttpGet("{id}")]
@@ -36,7 +37,7 @@ namespace API.Controllers
         [HttpPost("{id}/attend")]
         public async Task<ActionResult<Unit>> Attend(Guid id)
         {
-            return await Mediator.Send(new Attend.Command{Id = id});
+            return await Mediator.Send(new Attend.Command { Id = id });
         }
 
         [HttpPut("{id}")]
@@ -51,14 +52,14 @@ namespace API.Controllers
         [Authorize(Policy = "IsOperationHost")]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
-            return await Mediator.Send(new OperationDelete.Command{Id = id});
+            return await Mediator.Send(new OperationDelete.Command { Id = id });
         }
 
 
         [HttpDelete("{id}/attend")]
         public async Task<ActionResult<Unit>> Unattend(Guid id)
         {
-            return await Mediator.Send(new Unattend.Command{Id = id});
+            return await Mediator.Send(new Unattend.Command { Id = id });
         }
     }
 }
