@@ -29,7 +29,7 @@ const OperationDetailedHeader: React.FC<{ operation: IOperation }> = ({
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
         <Image
-          src={`/assets/categoryImages/${operation.category}.jpg`}
+          src={`client-app/public/assets/categoryImages${operation.category.toLowerCase()}.jpg`} //client-app/public/assets/categoryImages
           fluid
           style={operationImageStyle}
         />
