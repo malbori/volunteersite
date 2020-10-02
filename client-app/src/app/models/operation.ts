@@ -1,3 +1,8 @@
+export interface IOperationsEnvelope {
+  operations: IOperation[];
+  operationCount: number;
+}
+
 export interface IOperation {
   id: string;
   title: string;
@@ -42,7 +47,7 @@ export class OperationFormValues implements IOperationFormValues {
   }
 }
 export interface IAttendee {
-  username: string;
+  userName: string;
   displayName: string;
   image: string;
   isHost: boolean;

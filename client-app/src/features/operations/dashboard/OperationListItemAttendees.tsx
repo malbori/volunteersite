@@ -11,7 +11,7 @@ const styles = {
   borderwidth: 2,
 };
 
-const OperationsListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
+const OperationListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
   return (
     <List horizontal>
       {attendees.map((attendee) => (
@@ -34,4 +34,4 @@ const OperationsListItemAttendees: React.FC<Iprops> = ({ attendees }) => {
   );
 };
 
-export default OperationsListItemAttendees;
+export default OperationListItemAttendees;

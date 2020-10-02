@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { IOperation } from "../models/operation";
+import { IOperation, IOperationsEnvelope } from "../models/operation";
 import { history } from "../..";
 import { toast } from "react-toastify";
 import { IUser, IUserFormValues } from "../models/user";
@@ -66,7 +66,9 @@ const requests = {
 };
 
 const Operations = {
-  list: (): Promise<IOperation[]> => requests.get("/operations"),
+  list: (params: URLSearchParams): Promise<IOperationsEnvelope> =>
+    axios.get(
+      '/operations', { params: params }).then(sleep(1000)).then(responseBody),
   details: (id: string) => requests.get(`/operations/${id}`),
   create: (operation: IOperation) => requests.post("/operations", operation),
   update: (operation: IOperation) =>
@@ -98,6 +100,8 @@ const Profiles = {
   unfollow: (username: string) => requests.del(`/profiles/${username}/follow`),
   listFollowings: (username: string, predicate: string) =>
     requests.get(`/profiles/${username}/follow?predicate=${predicate}`),
+  listOperations: (username: string, predicate: string) =>
+    requests.get(`/profiles/${username}/Operations?predicate=${predicate}`)
 };
 
 export default {

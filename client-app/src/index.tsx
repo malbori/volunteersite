@@ -7,7 +7,7 @@ import "react-widgets/dist/css/react-widgets.css";
 import "./app/layout/styles.css";
 import App from "./app/layout/App";
 import * as serviceWorker from "./serviceWorker";
-import "mobx-react-lite/batchingForReactDom";
+//import "mobx-react-lite/batchingForReactDom";
 import ScrollToTop from "./app/layout/ScrollToTop";
 import dateFnsLocalizer from "react-widgets-date-fns";
 

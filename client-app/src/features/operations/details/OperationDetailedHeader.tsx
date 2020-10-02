@@ -45,7 +45,7 @@ const OperationDetailedHeader: React.FC<{ operation: IOperation }> = ({
                 <p>{format(operation.date, "eeee do MMMM")}</p>
                 <p>
                   Hosted by{" "}
-                  <Link to={`/profile/${host.username}`}>
+                  <Link to={`/profile/${host.userName}`}>
                     <strong>{host.displayName}</strong>
                   </Link>{" "}
                 </p>

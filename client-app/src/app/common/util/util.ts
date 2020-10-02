@@ -15,10 +15,10 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 export const setOperationProps = (operation: IOperation, user: IUser) => {
   operation.date = new Date(operation.date);
   operation.isGoing = operation.attendees.some(
-    (a) => a.username === user.username
+    (a) => a.userName === user.username
   );
   operation.isHost = operation.attendees.some(
-    (a) => a.username === user.username && a.isHost
+    (a) => a.userName === user.username && a.isHost
   );
   return operation;
 };
@@ -27,7 +27,7 @@ export const createAttendee = (user: IUser): IAttendee => {
   return {
     displayName: user.displayName,
     isHost: false,
-    username: user.username,
+    userName: user.username,
     image: user.image!,
   };
 };
