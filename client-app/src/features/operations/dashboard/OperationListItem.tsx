@@ -24,7 +24,7 @@ const OperationListItem: React.FC<{ operation: IOperation }> = ({ operation }) =
               </Item.Header>
               <Item.Description>
                 Hosted by
-                <Link to={`/profile/${host.username}`}>
+                <Link to={`/profile/${host.userName}`}>
                   {" "}
                   {host.displayName}
                 </Link>

@@ -47,7 +47,7 @@ export class OperationFormValues implements IOperationFormValues {
   }
 }
 export interface IAttendee {
-  username: string;
+  userName: string;
   displayName: string;
   image: string;
   isHost: boolean;

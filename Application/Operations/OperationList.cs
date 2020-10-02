@@ -65,13 +65,13 @@ namespace Application.Operations
                     queryable = queryable.Where(x => x.UserOperations.Any(a => a.AppUser.UserName == _userAccessor.GetCurrentUsername() && a.IsHost));
                 }
 
-                var activities = await queryable
+                var Operations = await queryable
                     .Skip(request.Offset ?? 0)
                     .Take(request.Limit ?? 3).ToListAsync();
 
                 return new OperationsEnvelope
                 {
-                    Operations = _mapper.Map<List<Operation>, List<OperationDto>>(activities),
+                    Operations = _mapper.Map<List<Operation>, List<OperationDto>>(Operations),
                     OperationCount = queryable.Count()
                 };
             }

@@ -19,7 +19,7 @@ const HomePage = () => {
             alt="logo"
             style={{ marginBottom: 12 }}
           />
-          Reoperations
+          Volunteer Events
         </Header>
         {isLoggedIn && user ? (
           <Fragment>
@@ -29,12 +29,12 @@ const HomePage = () => {
               content={`Welcome back ${user.displayName}`}
             />
             <Button as={Link} to="/operations" size="huge" inverted>
-              Go to operations!
+              Go to events!
             </Button>
           </Fragment>
         ) : (
           <Fragment>
-            <Header as="h2" inverted content="Welcome to Reoperations" />
+            <Header as="h2" inverted content="Welcome to Volunteer Me" />
             <Button
               onClick={() => openModal(<LoginForm />)}
               size="huge"

@@ -66,10 +66,9 @@ const requests = {
 };
 
 const Operations = {
-  list: (limit?: number, page?: number): Promise<IOperationsEnvelope> =>
-    requests.get(
-      `/operations/?limit${limit}&offset=${page ? page * limit! : 0}`
-    ),
+  list: (params: URLSearchParams): Promise<IOperationsEnvelope> =>
+    axios.get(
+      '/operations', { params: params }).then(sleep(1000)).then(responseBody),
   details: (id: string) => requests.get(`/operations/${id}`),
   create: (operation: IOperation) => requests.post("/operations", operation),
   update: (operation: IOperation) =>
@@ -101,6 +100,8 @@ const Profiles = {
   unfollow: (username: string) => requests.del(`/profiles/${username}/follow`),
   listFollowings: (username: string, predicate: string) =>
     requests.get(`/profiles/${username}/follow?predicate=${predicate}`),
+  listOperations: (username: string, predicate: string) =>
+    requests.get(`/profiles/${username}/Operations?predicate=${predicate}`)
 };
 
 export default {
